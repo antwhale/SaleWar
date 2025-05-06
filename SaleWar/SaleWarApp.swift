@@ -11,7 +11,8 @@ import SwiftUI
 struct SaleWarApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            let appViewModel = AppViewModel()
+            ContentView(appViewModel: appViewModel)
         }
     }
 }
