@@ -15,7 +15,7 @@ class Product: Object, ObjectKeyIdentifiable {
     @Persisted var price: String
     @Persisted var saleFlag: String
     
-    var toString: String {
+    func toString() -> String {
         return "Product(img: \(img), title: \(title), price: \(price), saleFlag: \(saleFlag))"
     }
 }

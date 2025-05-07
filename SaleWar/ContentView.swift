@@ -45,13 +45,13 @@ struct SaleWarTabView: View {
                 onSelectedTab: onSelectedTab
             )
             .layoutPriority(1)
-//            Spacer()
-//                .frame(width:25)
+
             SaleWarTabItem(
                 brand_logo: "cu_logo",
                 onSelectedTab: onSelectedTab
             )
             .layoutPriority(1)
+            
             SaleWarTabItem(
                 brand_logo: "7-eleven_logo",
                 onSelectedTab: onSelectedTab

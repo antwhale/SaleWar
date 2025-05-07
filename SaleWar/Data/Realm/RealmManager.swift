@@ -21,6 +21,7 @@ class RealmManager {
         }
     }()
     
+    //MARK: 상품관련
     func addProduct(product: Product) {
         do {
             try realm.write {
@@ -57,4 +58,34 @@ class RealmManager {
             print("Error deleting all products: \(error)")
         }
     }
+    
+    //MARK: json 파일 업데이트 정보
+    func saveLastFetchInfo(newDate: String) {
+            do {
+                if let existingInfo = getLastFetchInfo() {
+                    try realm.write {
+                        realm.delete(existingInfo)
+                        let newInfo = LastFectchInfo(value: newDate)
+                        realm.add(newInfo)
+                    }
+                } else {
+                    try realm.write {
+                        let newInfo = LastFectchInfo(value: newDate)
+                        realm.add(newInfo)
+                    }
+                }
+            } catch {
+                print("Error saving LastFetchInfo: \(error)")
+            }
+        }
+    
+    func getLastFetchInfo() -> LastFectchInfo? {
+        // Since we only want one, we'll fetch the first one.
+        return realm.objects(LastFectchInfo.self).first
+    }
+    
+    
+    
+    
+    
 }

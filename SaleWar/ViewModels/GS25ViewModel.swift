@@ -8,10 +8,12 @@
 import Foundation
 import Combine
 
-class GS25ViewModel: ObservableObject {
+class GS25ViewModel: BaseViewModel {
     init() {
         print("GS25ViewModel init")
     }
     
+    let cancellableBag = Set<AnyCancellable>()
+
     @Published var productList = [String]()
 }

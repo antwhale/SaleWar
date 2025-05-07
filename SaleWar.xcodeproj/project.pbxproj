@@ -27,6 +27,9 @@
 		F83844752DC905780089F869 /* GS25ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F83844742DC905780089F869 /* GS25ViewModel.swift */; };
 		F87A41FC2DCA26E800EE0FAE /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F87A41FB2DCA26E800EE0FAE /* RealmSwift */; };
 		F87A41FD2DCA26E800EE0FAE /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = F87A41FB2DCA26E800EE0FAE /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F87A41FF2DCA2ADA00EE0FAE /* LastFectchInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A41FE2DCA2ADA00EE0FAE /* LastFectchInfo.swift */; };
+		F87A42022DCA3DF900EE0FAE /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A42012DCA3DF900EE0FAE /* Constant.swift */; };
+		F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */; };
 		F8B369232DC92D500039A952 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B369222DC92D500039A952 /* RealmManager.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +86,9 @@
 		F83844702DC8F4140089F869 /* vo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = vo.swift; sourceTree = "<group>"; };
 		F83844722DC8F83E0089F869 /* BaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseView.swift; sourceTree = "<group>"; };
 		F83844742DC905780089F869 /* GS25ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GS25ViewModel.swift; sourceTree = "<group>"; };
+		F87A41FE2DCA2ADA00EE0FAE /* LastFectchInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastFectchInfo.swift; sourceTree = "<group>"; };
+		F87A42012DCA3DF900EE0FAE /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
+		F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		F8B369222DC92D500039A952 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				F81B6C6B2DC934AE00D88C13 /* Product.swift */,
+				F87A41FE2DCA2ADA00EE0FAE /* LastFectchInfo.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -144,6 +151,7 @@
 		F8227B1E2DC76F9F00C8EB21 /* SaleWar */ = {
 			isa = PBXGroup;
 			children = (
+				F87A42002DCA3DEB00EE0FAE /* Constant */,
 				F838446F2DC8F3E70089F869 /* Data */,
 				F8227B4A2DC7836F00C8EB21 /* Views */,
 				F8227B492DC781D500C8EB21 /* ViewModels */,
@@ -185,6 +193,7 @@
 			children = (
 				F838446C2DC8EFDA0089F869 /* AppViewModel.swift */,
 				F83844742DC905780089F869 /* GS25ViewModel.swift */,
+				F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -218,6 +227,14 @@
 				F83844702DC8F4140089F869 /* vo.swift */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		F87A42002DCA3DEB00EE0FAE /* Constant */ = {
+			isa = PBXGroup;
+			children = (
+				F87A42012DCA3DF900EE0FAE /* Constant.swift */,
+			);
+			path = Constant;
 			sourceTree = "<group>";
 		};
 		F8B369212DC92D400039A952 /* Realm */ = {
@@ -375,11 +392,14 @@
 			files = (
 				F8B369232DC92D500039A952 /* RealmManager.swift in Sources */,
 				F8227B572DC7A3EB00C8EB21 /* SaleWarTitleBar.swift in Sources */,
+				F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */,
 				F8227B4C2DC7838E00C8EB21 /* GS25View.swift in Sources */,
+				F87A42022DCA3DF900EE0FAE /* Constant.swift in Sources */,
 				F83844712DC8F4140089F869 /* vo.swift in Sources */,
 				F83844752DC905780089F869 /* GS25ViewModel.swift in Sources */,
 				F838446D2DC8EFDA0089F869 /* AppViewModel.swift in Sources */,
 				F8227B532DC79AB100C8EB21 /* SaleWarSearchBar.swift in Sources */,
+				F87A41FF2DCA2ADA00EE0FAE /* LastFectchInfo.swift in Sources */,
 				F8227B222DC76F9F00C8EB21 /* ContentView.swift in Sources */,
 				F8227B4E2DC783C200C8EB21 /* CUView.swift in Sources */,
 				F8227B552DC79ACC00C8EB21 /* BaseBackgroundView.swift in Sources */,
