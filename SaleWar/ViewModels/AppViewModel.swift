@@ -36,7 +36,7 @@ class AppViewModel: BaseViewModel {
                 print("newDate: \(newDate)")
                 let needToUpdate = checkUpdate(currentDate: serverDate, newDate: newDate)
                 if(needToUpdate) {
-                    
+                    initAllSaleInfo()
                 } else {
                     
                 }
@@ -46,24 +46,71 @@ class AppViewModel: BaseViewModel {
             }
         }
     }
-    async func initAllSaleInfo() {
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask { await self.initGS25SaleInfo() }
-            group.addTask { await self.initCUSaleInfo() }
-            group.addTask { await self.initSevenElevenInfo() }
+    func initAllSaleInfo() {
+        initSaleInfo(from: GS25_PRODUCT_URL)
+        initSaleInfo(from: CU_PRODUCT_URL)
+        initSaleInfo(from: SEVEN_ELEVEN_PRODUCT_URL)
+    }
+    
+    func initSaleInfo(from urlString: String) {
+        DispatchQueue.global(qos: .background).async {
+            print(#fileID, #function, #line, "\(urlString)")
+
+            guard let url = URL(string: urlString) else {
+                print(#fileID, #function, #line, "Error: Invalid URL string: \(urlString)")
+                return
+            }
+            
+            URLSession.shared.dataTask(with: url) { data, response, error in
+                if let error = error {
+                    print(#fileID, #function, #line, "Network Error: \(error.localizedDescription)")
+                    return
+                }
+                
+                guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                    print(#fileID, #function, #line, "HTTP Error: Invalid status code \(statusCode)")
+                    return
+                }
+                
+                guard let data = data else {
+                    print(#fileID, #function, #line, "Error: No data received from URL.")
+                    return
+                }
+                
+                print(#fileID, #function, #line, "Result data: \(data)")
+
+            }
         }
     }
     
-    func initGS25SaleInfo() async {
-        print(#fileID, #function, #line, "initGS25SaleInfo")
+    func initGS25SaleInfo() {
+        DispatchQueue.global(qos: .background).async {
+            print(#fileID, #function, #line, "initGS25SaleInfo")
+//            let result = await self.readFileAsync(from: GS25_PRODUCT_URL)
+//            switch result {
+//            case .success(let saleInfo):
+//                print(#fileID, #function, #line, "initGS25SaleInfo, success : \(saleInfo)")
+//
+//            case .failure(let error):
+//                print(#fileID, #function, #line, "initGS25SaleInfo, failure : \(error.localizedDescription)")
+//            }
+            
+        }
     }
     
-    func initCUSaleInfo() async {
-        print(#fileID, #function, #line, "initCUSaleInfo")
+    func initCUSaleInfo() {
+        DispatchQueue.global(qos: .background).async {
+            print(#fileID, #function, #line, "initCUSaleInfo")
+
+        }
     }
     
-    func initSevenElevenInfo() async {
-        print(#fileID, #function, #line, "initSevenElevenInfo")
+    func initSevenElevenInfo() {
+        DispatchQueue.global(qos: .background).async {
+            print(#fileID, #function, #line, "initSevenElevenInfo")
+
+        }
     }
     
     func readFileAsync(from urlString: String) async -> Result<String, Error> {
