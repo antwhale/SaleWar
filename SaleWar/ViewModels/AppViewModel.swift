@@ -35,6 +35,7 @@ class AppViewModel: BaseViewModel {
                 let newDate = getCurrentYYMM()
                 print("newDate: \(newDate)")
                 let needToUpdate = checkUpdate(currentDate: serverDate, newDate: newDate)
+                initAllSaleInfo()
                 if(needToUpdate) {
                     initAllSaleInfo()
                 } else {
@@ -47,21 +48,23 @@ class AppViewModel: BaseViewModel {
         }
     }
     func initAllSaleInfo() {
-        initSaleInfo(from: GS25_PRODUCT_URL)
-        initSaleInfo(from: CU_PRODUCT_URL)
-        initSaleInfo(from: SEVEN_ELEVEN_PRODUCT_URL)
+        initSaleInfo(for: StoreType.gs25)
+        initSaleInfo(for: StoreType.cu)
+        initSaleInfo(for: StoreType.sevenEleven)
     }
     
-    func initSaleInfo(from urlString: String) {
+    func initSaleInfo(for storeType: StoreType) {
         DispatchQueue.global(qos: .background).async {
-            print(#fileID, #function, #line, "\(urlString)")
+            print(#fileID, #function, #line, "initSaleInfo, \(storeType.rawValue)")
 
-            guard let url = URL(string: urlString) else {
-                print(#fileID, #function, #line, "Error: Invalid URL string: \(urlString)")
+            guard let url = URL(string: storeType.rawJSONURL) else {
+                print(#fileID, #function, #line, "Error: Invalid URL string: \(storeType.rawValue)")
                 return
             }
+            print("make url object")
             
-            URLSession.shared.dataTask(with: url) { data, response, error in
+            let task = URLSession.shared.dataTask(with: url) { data, response, error in
+                print("connecting...")
                 if let error = error {
                     print(#fileID, #function, #line, "Network Error: \(error.localizedDescription)")
                     return
@@ -78,9 +81,37 @@ class AppViewModel: BaseViewModel {
                     return
                 }
                 
-                print(#fileID, #function, #line, "Result data: \(data)")
+                do {
+                    let decoder = JSONDecoder()
+                    decoder.keyDecodingStrategy = .convertFromSnakeCase
+                    
+                    let productJSONs = try decoder.decode([ProductJSON].self, from: data)
+                    let realmProducts = productJSONs.map {
+                        Product(jsonProduct: $0, store: storeType.rawValue)
+                    }
+                    
+                    self.realmManager.deleteProducts(forStore: storeType.rawValue)
+                    self.realmManager.addProducts(products: realmProducts)
+                    
+                    let newDate = self.getCurrentYYMM()
+                    print("newDate: \(newDate)")
+                    
+                    self.realmManager.saveLastFetchInfo(newDate: newDate)
+                    
+                    print(#fileID, #function, #line, "RealmDB update complete!")
+
+                    if let fetchedProducts = self.realmManager.getProducts() {
+                        print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts.count)")
+                    }
+                    
+                } catch {
+                    print(#fileID, #function, #line, "Error decoding product data: \(error.localizedDescription)")
+
+                }
 
             }
+            
+            task.resume()
         }
     }
     

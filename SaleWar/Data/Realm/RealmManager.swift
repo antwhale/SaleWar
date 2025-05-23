@@ -32,9 +32,24 @@ class RealmManager {
         }
     }
     
+    func addProducts(products: [Product]) {
+            do {
+                try realm.write {
+                    realm.add(products, update: .all)
+                    print("Added/Updated \(products.count) products in bulk.")
+                }
+            } catch {
+                print("Error adding products in bulk: \(error)")
+            }
+        }
+    
     func getProducts() -> Results<Product>? {
         return realm.objects(Product.self)
     }
+    
+    func getProducts(forStore store: String) -> Results<Product>? {
+            return realm.objects(Product.self).filter("store == %@", store)
+        }
     
     func deleteProduct(product: Product) {
         do {
@@ -48,7 +63,19 @@ class RealmManager {
         }
     }
     
-    func deleteAllProduct(product: Product) {
+    func deleteProducts(forStore store: String) {
+        do {
+            try realm.write {
+                let productsToDelete = realm.objects(Product.self).filter("store == %@", store)
+                realm.delete(productsToDelete)
+                print("Deleted all products for store: \(store)")
+            }
+        } catch {
+            print("Error deleting products for store \(store): \(error)")
+        }
+    }
+    
+    func deleteAllProduct() {
         do {
             try realm.write {
                 let allProducts = realm.objects(Product.self)
