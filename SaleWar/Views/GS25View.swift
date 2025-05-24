@@ -10,6 +10,7 @@ import SwiftUI
 
 struct GS25View: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
+    @ObservedObject var gs25ViewModel : GS25ViewModel
     
     var body: some View {
         
@@ -31,10 +32,14 @@ struct GS25View: BaseView {
                 SaleWarSearchBar()
                 
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15, content: {
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
+                    ForEach(gs25ViewModel.productList, id: \.self) { product in
+                        ProductGridItem(product: product)
+                    }
                 })
                 .frame(maxHeight: .infinity)
+                .onAppear {
+                    gs25ViewModel.fetchGS25Products()
+                }
                 
                 
             }
@@ -51,6 +56,7 @@ struct GS25View: BaseView {
 #Preview {
     
     GS25View(
-        onSelectedTab: { (_) in }
+        onSelectedTab: { (_) in },
+        gs25ViewModel: GS25ViewModel()
     )
 }

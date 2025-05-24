@@ -11,20 +11,22 @@ import RealmSwift
 class RealmManager {
     static let shared = RealmManager()
     
-    lazy var realm: Realm = {
-        do {
-            let realm = try Realm()
-            return realm
-
-        } catch  {
-            fatalError("Failed to initialize Realm: \(error)")
-        }
-    }()
+//    lazy var realm: Realm = {
+//        do {
+//            print("Realm init, thread: \(OperationQueue.current == OperationQueue.main)")
+//            let realm = try Realm()
+//            return realm
+//
+//        } catch  {
+//            fatalError("Failed to initialize Realm: \(error)")
+//        }
+//    }()
     
     //MARK: 상품관련
     func addProduct(product: Product) {
         do {
-            try realm.write {
+            let realm = try Realm()
+            realm.writeAsync {
                 realm.add(product, update: .all)
             }
         } catch {
@@ -33,27 +35,41 @@ class RealmManager {
     }
     
     func addProducts(products: [Product]) {
-            do {
-                try realm.write {
-                    realm.add(products, update: .all)
-                    print("Added/Updated \(products.count) products in bulk.")
-                }
-            } catch {
-                print("Error adding products in bulk: \(error)")
+        do {
+            let realm = try Realm()
+            realm.writeAsync {
+                realm.add(products, update: .all)
+                print("Added/Updated \(products.count) products in bulk.")
             }
+        } catch {
+            print("Error adding products in bulk: \(error)")
         }
+    }
     
     func getProducts() -> Results<Product>? {
-        return realm.objects(Product.self)
+        do {
+            let realm = try Realm()
+            return realm.objects(Product.self)
+        } catch {
+            print("Error occurs when getProducts")
+            return nil
+        }
     }
     
     func getProducts(forStore store: String) -> Results<Product>? {
+        do {
+            let realm = try Realm()
             return realm.objects(Product.self).filter("store == %@", store)
+        } catch {
+            print("Error occurs when getProducts")
+            return nil;
         }
+    }
     
     func deleteProduct(product: Product) {
         do {
-            try realm.write {
+            let realm = try Realm()
+            realm.writeAsync {
                 if let productToDelete = realm.object(ofType: Product.self, forPrimaryKey: product.id) {
                     realm.delete(productToDelete)
                 }
@@ -65,7 +81,8 @@ class RealmManager {
     
     func deleteProducts(forStore store: String) {
         do {
-            try realm.write {
+            let realm = try Realm()
+            realm.writeAsync {
                 let productsToDelete = realm.objects(Product.self).filter("store == %@", store)
                 realm.delete(productsToDelete)
                 print("Deleted all products for store: \(store)")
@@ -77,7 +94,8 @@ class RealmManager {
     
     func deleteAllProduct() {
         do {
-            try realm.write {
+            let realm = try Realm()
+            realm.writeAsync {
                 let allProducts = realm.objects(Product.self)
                 realm.delete(allProducts)
             }
@@ -88,28 +106,45 @@ class RealmManager {
     
     //MARK: json 파일 업데이트 정보
     func saveLastFetchInfo(newDate: String) {
-            do {
-                if let existingInfo = getLastFetchInfo() {
-                    try realm.write {
-                        realm.delete(existingInfo)
-                        let newInfo = LastFectchInfo(value: newDate)
-                        realm.add(newInfo)
-                    }
+        do {
+//            if let existingInfo = getLastFetchInfo() {
+            let realm = try Realm()
+            realm.writeAsync {
+                if let existingInfo = self.getLastFetchInfo() {
+                    realm.delete(existingInfo)
+                    let newInfo = LastFectchInfo(value: newDate)
+                    realm.add(newInfo)
                 } else {
-                    try realm.write {
-                        let newInfo = LastFectchInfo(value: newDate)
-                        realm.add(newInfo)
-                    }
+                    let newInfo = LastFectchInfo(value: newDate)
+                    realm.add(newInfo)
                 }
-            } catch {
-                print("Error saving LastFetchInfo: \(error)")
+                
             }
+//            } else {
+//                try realm.write {
+//                    let newInfo = LastFectchInfo(value: newDate)
+//                    realm.add(newInfo)
+//                }
+//            }
+        } catch {
+            print("Error saving LastFetchInfo: \(error)")
         }
+    }
     
     func getLastFetchInfo() -> LastFectchInfo? {
-        // Since we only want one, we'll fetch the first one.
-        return realm.objects(LastFectchInfo.self).first
+        print("getLastFetchInfo, thread: \(OperationQueue.current == OperationQueue.main)")
+        do {
+            let realm = try Realm()
+            // Since we only want one, we'll fetch the first one.
+            return realm.objects(LastFectchInfo.self).first
+        } catch {
+            print("Error occurs when getLastFetchInfo")
+            return nil
+        }
+        
     }
+    
+    
     
     
     

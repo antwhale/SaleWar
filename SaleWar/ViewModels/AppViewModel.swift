@@ -11,15 +11,13 @@ import Combine
 class AppViewModel: BaseViewModel {
     let cancellableBag = Set<AnyCancellable>()
     
-    private let realmManager: RealmManager
+//    private var realmManager: RealmManager
     
     @Published var selectedTab : SaleWarTab = .gs25
     @Published var fetchingFlag = false
         
     init() {
         print("AppViewModel init")
-        
-        realmManager = RealmManager.shared
         
         checkProductVersion()
     }
@@ -32,14 +30,15 @@ class AppViewModel: BaseViewModel {
             switch result {
                 case .success(let serverDate):
                 print(#fileID, #function, #line, "checkProductVersion, success: \(serverDate)")
-                let newDate = getCurrentYYMM()
+                let newDate = await getLastFetchDate()
                 print("newDate: \(newDate)")
-                let needToUpdate = checkUpdate(currentDate: serverDate, newDate: newDate)
+                print("check date length: \(serverDate.count) vs \(newDate.count)")
+                let needToUpdate = checkUpdate(currentDate: serverDate.trimmingCharacters(in: .newlines), newDate: newDate)
                 initAllSaleInfo()
                 if(needToUpdate) {
                     initAllSaleInfo()
                 } else {
-                    
+                    print(#fileID, #function, #line, "Don't need to update sale info")
                 }
                 case .failure(let error):
                 print(#fileID, #function, #line, "checkProductVersion, failure : \(error.localizedDescription)")
@@ -47,16 +46,18 @@ class AppViewModel: BaseViewModel {
             }
         }
     }
+    
     func initAllSaleInfo() {
         initSaleInfo(for: StoreType.gs25)
         initSaleInfo(for: StoreType.cu)
         initSaleInfo(for: StoreType.sevenEleven)
+        
     }
     
     func initSaleInfo(for storeType: StoreType) {
         DispatchQueue.global(qos: .background).async {
             print(#fileID, #function, #line, "initSaleInfo, \(storeType.rawValue)")
-
+            
             guard let url = URL(string: storeType.rawJSONURL) else {
                 print(#fileID, #function, #line, "Error: Invalid URL string: \(storeType.rawValue)")
                 return
@@ -90,60 +91,48 @@ class AppViewModel: BaseViewModel {
                         Product(jsonProduct: $0, store: storeType.rawValue)
                     }
                     
-                    self.realmManager.deleteProducts(forStore: storeType.rawValue)
-                    self.realmManager.addProducts(products: realmProducts)
-                    
-                    let newDate = self.getCurrentYYMM()
-                    print("newDate: \(newDate)")
-                    
-                    self.realmManager.saveLastFetchInfo(newDate: newDate)
-                    
-                    print(#fileID, #function, #line, "RealmDB update complete!")
+                    DispatchQueue.main.async {
+                        let realmManager = RealmManager.shared
+                        realmManager.deleteProducts(forStore: storeType.rawValue)
+                        realmManager.addProducts(products: realmProducts)
 
-                    if let fetchedProducts = self.realmManager.getProducts() {
-                        print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts.count)")
+                        print(#fileID, #function, #line, "RealmDB update complete!")
+                        
+                        if(storeType == .sevenEleven) {
+                            self.saveSaleInfoUpdateDate(realmManager: realmManager)
+                        }
+
+                        if let fetchedProducts = realmManager.getProducts() {
+                            print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts.count)")
+                        }
                     }
                     
                 } catch {
                     print(#fileID, #function, #line, "Error decoding product data: \(error.localizedDescription)")
-
                 }
-
             }
             
             task.resume()
         }
     }
     
-    func initGS25SaleInfo() {
-        DispatchQueue.global(qos: .background).async {
-            print(#fileID, #function, #line, "initGS25SaleInfo")
-//            let result = await self.readFileAsync(from: GS25_PRODUCT_URL)
-//            switch result {
-//            case .success(let saleInfo):
-//                print(#fileID, #function, #line, "initGS25SaleInfo, success : \(saleInfo)")
-//
-//            case .failure(let error):
-//                print(#fileID, #function, #line, "initGS25SaleInfo, failure : \(error.localizedDescription)")
-//            }
-            
-        }
-    }
-    
-    func initCUSaleInfo() {
-        DispatchQueue.global(qos: .background).async {
-            print(#fileID, #function, #line, "initCUSaleInfo")
+    func saveSaleInfoUpdateDate(realmManager : RealmManager) {
+        let newDate = self.getCurrentYYMM()
+        print("saveSaleInfoUpdateDate, newDate: \(newDate)")
 
-        }
+        realmManager.saveLastFetchInfo(newDate: newDate)
     }
     
-    func initSevenElevenInfo() {
-        DispatchQueue.global(qos: .background).async {
-            print(#fileID, #function, #line, "initSevenElevenInfo")
-
+    func getLastFetchDate() async -> String {
+        print("getLastFetchDate, thread: \(OperationQueue.current == OperationQueue.main)")
+        let realmManager = RealmManager.shared
+        let lastFetchInfo = realmManager.getLastFetchInfo()
+        guard let lastFetchDate = lastFetchInfo?.date else {
+            return ""
         }
+        return lastFetchDate
     }
-    
+   
     func readFileAsync(from urlString: String) async -> Result<String, Error> {
         guard let url = URL(string: urlString) else {
             return .failure(URLError(.badURL))
@@ -172,9 +161,11 @@ class AppViewModel: BaseViewModel {
 
     //true면 상품정보 다시 읽어와야하고 false면 최신 상품정보 저장 중이므로 업데이트 필요없음
     func checkUpdate(currentDate: String, newDate: String) -> Bool {
+        print("checkUpdate, currentDate: \(currentDate) newDate: \(newDate) count: \(currentDate.count) \(newDate.count)")
         // Check if the input strings are valid.
         guard currentDate.count == 4, newDate.count == 4 else {
-            return false // Handle invalid input
+            print("checkUpdate, invalid input so return true")
+            return true // Handle invalid input
         }
         
         // Extract year and month components.
@@ -182,21 +173,28 @@ class AppViewModel: BaseViewModel {
               let currentMonth = Int(currentDate.suffix(2)),
               let newYear = Int(newDate.prefix(2)),
               let newMonth = Int(newDate.suffix(2)) else {
-            return false // Handle invalid numeric values
+            print("checkUpdate, can not divide YYMM so return true")
+
+            return true // Handle invalid numeric values
         }
         
         // Perform the comparison.
         if currentYear < newYear {
-            return true
-        } else if currentYear > newYear {
+            print("checkUpdate, currentYear < newYear")
             return false
+        } else if currentYear > newYear {
+            print("checkUpdate, currentYear > newYear")
+            return true
         } else { // Years are equal, compare months.
             if currentMonth < newMonth {
-                return true
-            } else if currentMonth > newMonth {
+                print("checkUpdate, currentMonth < newMonth")
                 return false
+            } else if currentMonth > newMonth {
+                print("checkUpdate, currentMonth > newMonth")
+                return true
             } else {
-                return false // Years and months are equal.
+                print("checkUpdate, Years and months are equal")
+                return false
             }
         }
     }

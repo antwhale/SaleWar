@@ -19,7 +19,8 @@ struct ContentView: View {
             VStack {
                 if(appViewModel.selectedTab == .gs25) {
                     GS25View(
-                        onSelectedTab: { (tab) in appViewModel.selectedTab = tab }
+                        onSelectedTab: { (tab) in appViewModel.selectedTab = tab },
+                        gs25ViewModel: GS25ViewModel()
                     )
                 } else if(appViewModel.selectedTab == .cu) {
                     CUView(

@@ -31,6 +31,7 @@
 		F87A42022DCA3DF900EE0FAE /* Constant.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A42012DCA3DF900EE0FAE /* Constant.swift */; };
 		F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */; };
 		F8B369232DC92D500039A952 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B369222DC92D500039A952 /* RealmManager.swift */; };
+		F8C484EA2DE2138C00C0738D /* ProductGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C484E92DE2138C00C0738D /* ProductGridItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,6 +91,7 @@
 		F87A42012DCA3DF900EE0FAE /* Constant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constant.swift; sourceTree = "<group>"; };
 		F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		F8B369222DC92D500039A952 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
+		F8C484E92DE2138C00C0738D /* ProductGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductGridItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,6 +218,7 @@
 				F8227B542DC79ACC00C8EB21 /* BaseBackgroundView.swift */,
 				F8227B562DC7A3EB00C8EB21 /* SaleWarTitleBar.swift */,
 				F83844722DC8F83E0089F869 /* BaseView.swift */,
+				F8C484E92DE2138C00C0738D /* ProductGridItem.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -390,6 +393,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8C484EA2DE2138C00C0738D /* ProductGridItem.swift in Sources */,
 				F8B369232DC92D500039A952 /* RealmManager.swift in Sources */,
 				F8227B572DC7A3EB00C8EB21 /* SaleWarTitleBar.swift in Sources */,
 				F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */,

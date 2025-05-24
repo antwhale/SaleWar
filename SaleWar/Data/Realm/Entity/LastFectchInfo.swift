@@ -10,6 +10,11 @@ import RealmSwift
 
 class LastFectchInfo: Object, ObjectKeyIdentifiable {
     @Persisted(primaryKey: true) var date: String
+    
+    convenience init(value: String) {
+            self.init()
+            self.date = value
+    }
 }
 
 
