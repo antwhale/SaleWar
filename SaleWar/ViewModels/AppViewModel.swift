@@ -34,7 +34,7 @@ class AppViewModel: BaseViewModel {
                 print("newDate: \(newDate)")
                 print("check date length: \(serverDate.count) vs \(newDate.count)")
                 let needToUpdate = checkUpdate(currentDate: serverDate.trimmingCharacters(in: .newlines), newDate: newDate)
-                initAllSaleInfo()
+//                initAllSaleInfo()
                 if(needToUpdate) {
                     initAllSaleInfo()
                 } else {

@@ -12,9 +12,8 @@ struct ProductGridItem: View {
     let product: Product
 
     var body: some View {
+        
         VStack(spacing: 8) {
-            
-            
             // Load image from URL
             AsyncImage(url: URL(string: product.img)) { phase in
                 switch phase {
@@ -39,7 +38,8 @@ struct ProductGridItem: View {
             }
             
             Text(product.title)
-                .font(.title3)
+                .font(.subheadline)
+                .fontWeight(.semibold)
                 .lineLimit(2) // Limit to 2 lines, truncate if longer
                 .multilineTextAlignment(.center)
             
@@ -51,13 +51,25 @@ struct ProductGridItem: View {
                 .font(.caption)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 3)
-                .background(Color.blue)
+                .background(saleFlagBackgroundColor(for: product.saleFlag))
                 .foregroundColor(.white)
                 .cornerRadius(5)
         }
+        .frame(maxWidth: .infinity, minHeight: 220)
         .padding(8)
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 3)
+    }
+    
+    func saleFlagBackgroundColor(for flag: String) -> Color {
+        switch flag {
+        case "1+1":
+            return .blue
+        case "2+1":
+            return .green
+        default:
+            return .gray
+        }
     }
 }

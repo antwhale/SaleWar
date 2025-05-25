@@ -31,17 +31,29 @@ struct GS25View: BaseView {
                 
                 SaleWarSearchBar()
                 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15, content: {
-                    ForEach(gs25ViewModel.productList, id: \.self) { product in
-                        ProductGridItem(product: product)
+                Spacer(minLength: 8)
+                
+                GeometryReader { geometry in
+                    ScrollView() {
+                        Spacer(minLength: 8)
+                        
+                        let itemWidth = (geometry.size.width - 15) / 2
+                        
+                        let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
+                        
+                        //[GridItem(.flexible()), GridItem(.flexible())]
+                        LazyVGrid(columns: columns, spacing: 15, content: {
+                            ForEach(gs25ViewModel.productList, id: \.self) { product in
+                                ProductGridItem(product: product)
+//                                    .frame(width: itemWidth, height: 300)
+                            }
+                        })
+                        .frame(maxHeight: .infinity)
+                        .onAppear {
+                            gs25ViewModel.fetchGS25Products()
+                        }
                     }
-                })
-                .frame(maxHeight: .infinity)
-                .onAppear {
-                    gs25ViewModel.fetchGS25Products()
                 }
-                
-                
             }
             .padding()
             
