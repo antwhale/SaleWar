@@ -14,10 +14,11 @@ struct GS25View: BaseView {
     
     var body: some View {
         
-        ZStack(alignment: .bottom) {
+        ZStack() {
             BaseBackgroundView()
-//                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            
+
+    
+                        
             VStack {
                 SaleWarTitleBar()
                 
@@ -44,22 +45,39 @@ struct GS25View: BaseView {
                         //[GridItem(.flexible()), GridItem(.flexible())]
                         LazyVGrid(columns: columns, spacing: 15, content: {
                             ForEach(gs25ViewModel.productList, id: \.self) { product in
-                                ProductGridItem(product: product)
+                                ProductGridItem(product: product){
+                                    gs25ViewModel.showingProductDetailView = true
+                                }
 //                                    .frame(width: itemWidth, height: 300)
                             }
                         })
                         .frame(maxHeight: .infinity)
                         .onAppear {
-                            gs25ViewModel.fetchGS25Products()
+//                            gs25ViewModel.fetchGS25Products()
+                            gs25ViewModel.observeGS25Products()
                         }
                     }
                 }
             }
             .padding()
+            .alert(isPresented: $gs25ViewModel.showingProductDetailView) {
+                Alert(
+                    title: Text("Test Alert"),
+                    message: Text("No product details available."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
             
-            SaleWarTabView(
-                onSelectedTab: onSelectedTab
-            )
+            VStack {
+                Spacer()
+                    .frame(maxWidth: .infinity)
+                SaleWarTabView(
+                    onSelectedTab: onSelectedTab
+                )
+                
+            }
+            
+            
                 
         }
     }

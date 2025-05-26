@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ProductGridItem: View {
     let product: Product
+    var onProductClicked: () -> Void
 
     var body: some View {
         
@@ -60,6 +61,9 @@ struct ProductGridItem: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(radius: 3)
+        .onTapGesture {
+            onProductClicked()
+        }
     }
     
     func saleFlagBackgroundColor(for flag: String) -> Color {

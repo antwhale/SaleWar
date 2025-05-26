@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F32835082DE450FD00BF4F80 /* CUViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32835072DE450FD00BF4F80 /* CUViewModel.swift */; };
+		F328350A2DE4526B00BF4F80 /* SevenElevenViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32835092DE4526B00BF4F80 /* SevenElevenViewModel.swift */; };
 		F81B6C6C2DC934AE00D88C13 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = F81B6C6B2DC934AE00D88C13 /* Product.swift */; };
 		F8227B202DC76F9F00C8EB21 /* SaleWarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8227B1F2DC76F9F00C8EB21 /* SaleWarApp.swift */; };
 		F8227B222DC76F9F00C8EB21 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8227B212DC76F9F00C8EB21 /* ContentView.swift */; };
@@ -66,6 +68,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F32835072DE450FD00BF4F80 /* CUViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CUViewModel.swift; sourceTree = "<group>"; };
+		F32835092DE4526B00BF4F80 /* SevenElevenViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenElevenViewModel.swift; sourceTree = "<group>"; };
 		F81B6C6B2DC934AE00D88C13 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		F8227B1C2DC76F9F00C8EB21 /* SaleWar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SaleWar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8227B1F2DC76F9F00C8EB21 /* SaleWarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaleWarApp.swift; sourceTree = "<group>"; };
@@ -196,6 +200,8 @@
 				F838446C2DC8EFDA0089F869 /* AppViewModel.swift */,
 				F83844742DC905780089F869 /* GS25ViewModel.swift */,
 				F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */,
+				F32835072DE450FD00BF4F80 /* CUViewModel.swift */,
+				F32835092DE4526B00BF4F80 /* SevenElevenViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -393,10 +399,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F32835082DE450FD00BF4F80 /* CUViewModel.swift in Sources */,
 				F8C484EA2DE2138C00C0738D /* ProductGridItem.swift in Sources */,
 				F8B369232DC92D500039A952 /* RealmManager.swift in Sources */,
 				F8227B572DC7A3EB00C8EB21 /* SaleWarTitleBar.swift in Sources */,
 				F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */,
+				F328350A2DE4526B00BF4F80 /* SevenElevenViewModel.swift in Sources */,
 				F8227B4C2DC7838E00C8EB21 /* GS25View.swift in Sources */,
 				F87A42022DCA3DF900EE0FAE /* Constant.swift in Sources */,
 				F83844712DC8F4140089F869 /* vo.swift in Sources */,

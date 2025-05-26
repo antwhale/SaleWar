@@ -15,11 +15,11 @@ class GS25ViewModel: BaseViewModel {
     }
     
     let cancellableBag = Set<AnyCancellable>()
-
     @Published var productList = [Product]()
+    @Published var isLoading = false
+    @Published var showingProductDetailView = false
     
     func fetchGS25Products(){
-//        DispatchQueue.global(qos: .background).async {
             print("fetchGS25Products, thread: \(OperationQueue.current == OperationQueue.main)")
             
             let realmManager = RealmManager.shared
@@ -34,9 +34,28 @@ class GS25ViewModel: BaseViewModel {
             
             let gs25ProductsArray = Array(gs25Products)
             
-//            DispatchQueue.main.async {
                 self.productList = gs25ProductsArray
-//            }
-//        }
+
+    }
+    
+    func observeGS25Products() {
+        print("observeGS25Products")
+        
+        let realmManager = RealmManager.shared
+        realmManager.observeProducts(store: StoreType.gs25) { [weak self] results in
+            guard let isProductsEmpty = self?.productList.isEmpty else { return }
+            
+            if isProductsEmpty {
+                self?.productList = results
+            } else {
+                self?.productList.removeAll()
+                self?.productList = results
+            }
+        }
+    }
+    
+    deinit {
+        let realmManager = RealmManager.shared
+        realmManager.invalidateProductNotificationToken(for: .gs25)
     }
 }

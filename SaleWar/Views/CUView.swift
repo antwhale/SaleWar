@@ -10,6 +10,7 @@ import SwiftUI
 
 struct CUView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
+    @ObservedObject var cuViewModel : CUViewModel
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -28,13 +29,32 @@ struct CUView: BaseView {
                 
                 SaleWarSearchBar()
                 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15, content: {
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
-                })
-                .frame(maxHeight: .infinity)
+                GeometryReader { geometry in
+                    ScrollView() {
+                        Spacer(minLength: 8)
+                        
+                        let itemWidth = (geometry.size.width - 15) / 2
+                        
+                        let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
+                        
+                        //[GridItem(.flexible()), GridItem(.flexible())]
+                        LazyVGrid(columns: columns, spacing: 15, content: {
+                            ForEach(cuViewModel.productList, id: \.self) { product in
+                                ProductGridItem(product: product){
+                                    
+                                }
+//                                    .frame(width: itemWidth, height: 300)
+                            }
+                        })
+                        .frame(maxHeight: .infinity)
+                        .onAppear {
+                            cuViewModel.observeCUProducts()
+                        }
+                    }
+                }
             }
             .padding()
+            
             SaleWarTabView(
                 onSelectedTab: onSelectedTab
             )
@@ -46,6 +66,7 @@ struct CUView: BaseView {
 
 #Preview {
     CUView(
-        onSelectedTab: {(_) in}
+        onSelectedTab: {(_) in},
+        cuViewModel: CUViewModel()
     )
 }

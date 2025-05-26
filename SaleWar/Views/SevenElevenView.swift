@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SevenElevenView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
+    @ObservedObject var sevenElevenViewModel : SevenElevenViewModel
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -28,11 +29,29 @@ struct SevenElevenView: BaseView {
                 
                 SaleWarSearchBar()
                 
-                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 15, content: {
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
-                    /*@START_MENU_TOKEN@*/Text("Placeholder")/*@END_MENU_TOKEN@*/
-                })
-                .frame(maxHeight: .infinity)
+                GeometryReader { geometry in
+                    ScrollView() {
+                        Spacer(minLength: 8)
+                        
+                        let itemWidth = (geometry.size.width - 15) / 2
+                        
+                        let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
+                        
+                        LazyVGrid(columns: columns, spacing: 15, content: {
+                            ForEach(sevenElevenViewModel.productList, id: \.self) { product in
+                                ProductGridItem(product: product){
+                                    
+                                }
+//                                    .frame(width: itemWidth, height: 300)
+                            }
+                        })
+                        .frame(maxHeight: .infinity)
+                        .onAppear {
+//                            gs25ViewModel.fetchGS25Products()
+                            sevenElevenViewModel.observeSevenElevenProducts()
+                        }
+                    }
+                }
             }
             .padding()
             
@@ -45,6 +64,7 @@ struct SevenElevenView: BaseView {
 
 #Preview {
     SevenElevenView(
-        onSelectedTab: {(_) in}
+        onSelectedTab: {(_) in},
+        sevenElevenViewModel: SevenElevenViewModel()
     )
 }

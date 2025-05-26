@@ -10,7 +10,9 @@ import RealmSwift
 
 class RealmManager {
     static let shared = RealmManager()
-    
+    var gs25NotificationToken: NotificationToken?
+    var cuNotificationToken: NotificationToken?
+    var sevenElevenNotificationToken: NotificationToken?
 //    lazy var realm: Realm = {
 //        do {
 //            print("Realm init, thread: \(OperationQueue.current == OperationQueue.main)")
@@ -101,6 +103,36 @@ class RealmManager {
             }
         } catch {
             print("Error deleting all products: \(error)")
+        }
+    }
+    
+    func observeProducts(store: StoreType, onUpdateProducts: @escaping ([Product]) -> Void) {
+        let realm = try! Realm()
+        let results = realm.objects(Product.self).filter("store == %@", store.rawValue)
+        
+        gs25NotificationToken = results.observe { change in
+            switch change {
+            case .initial:
+                print("observeProducts, initial")
+                onUpdateProducts(Array(results))
+            case .update(_, let deletions, let insertions, let modifications):
+                print("observeProducts, update")
+                onUpdateProducts(Array(results))
+            case .error(let error):
+                print("observeProducts, \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func invalidateProductNotificationToken(for store: StoreType) {
+        print("invalidateGS25NotificationToken")
+        
+        if(store == .gs25) {
+            gs25NotificationToken?.invalidate()
+        } else if (store == .cu) {
+            cuNotificationToken?.invalidate()
+        } else if(store == .sevenEleven) {
+            sevenElevenNotificationToken?.invalidate()
         }
     }
     
