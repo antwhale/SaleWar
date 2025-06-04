@@ -20,6 +20,7 @@ class GS25ViewModel: BaseViewModel {
     @Published var showingProductDetailView = false
     @Published var selectedProduct: Product?
     @Published var searchKeyword: String = ""
+    @Published var showingFavoriteList = false
     
     func fetchGS25Products(){
             print("fetchGS25Products, thread: \(OperationQueue.current == OperationQueue.main)")

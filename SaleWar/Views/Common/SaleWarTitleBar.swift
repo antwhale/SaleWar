@@ -9,7 +9,8 @@ import Foundation
 import SwiftUI
 
 struct SaleWarTitleBar : View {
-
+    let onClickFavoriteMenu: () -> Void
+    
     var body: some View {
         HStack {
             Image(systemName: "line.horizontal.3")
@@ -27,6 +28,7 @@ struct SaleWarTitleBar : View {
             
             Button {
                 print("click favorite icon")
+                onClickFavoriteMenu()
             } label : {
                 Image(systemName: "heart.fill")
                     .resizable()

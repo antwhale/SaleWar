@@ -18,7 +18,9 @@ struct CUView: BaseView {
             BaseBackgroundView()
             
             VStack {
-                SaleWarTitleBar()
+                SaleWarTitleBar() {
+                    cuViewModel.showingFavoriteList = true
+                }
                 
                 Spacer(minLength: 16)
                 

@@ -21,6 +21,7 @@ class CUViewModel : BaseViewModel {
     @Published var showingProductDetailView = false
     @Published var selectedProduct: Product?
     @Published var searchKeyword: String = ""
+    @Published var showingFavoriteList = false
     
     func fetchCUProducts() {
         print("fetchCUProducts, thread: \(OperationQueue.current == OperationQueue.main)")

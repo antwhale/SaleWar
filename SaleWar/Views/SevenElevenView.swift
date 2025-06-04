@@ -19,7 +19,9 @@ struct SevenElevenView: BaseView {
             BaseBackgroundView()
             
             VStack {
-                SaleWarTitleBar()
+                SaleWarTitleBar() {
+                    sevenElevenViewModel.showingFavoriteList = true
+                }
                 
                 Spacer(minLength: 16)
                 

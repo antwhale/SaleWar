@@ -19,7 +19,9 @@ struct GS25View: BaseView {
             BaseBackgroundView()
 
             VStack {
-                SaleWarTitleBar()
+                SaleWarTitleBar() {
+                    gs25ViewModel.showingFavoriteList = true
+                }
                 
                 Spacer(minLength: 16)
                 
@@ -45,7 +47,6 @@ struct GS25View: BaseView {
                         
                         let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
                         
-                        //[GridItem(.flexible()), GridItem(.flexible())]
                         LazyVGrid(columns: columns, spacing: 15, content: {
                             ForEach(gs25ViewModel.productList, id: \.self) { product in
                                 ProductGridItem(product: product){
@@ -55,7 +56,6 @@ struct GS25View: BaseView {
                                         gs25ViewModel.showingProductDetailView = true
                                         gs25ViewModel.selectedProduct = product
                                     }
-                                    
                                 }
 //                                    .frame(width: itemWidth, height: 300)
                             }
@@ -71,6 +71,9 @@ struct GS25View: BaseView {
             .padding()
             .onTapGesture {
                 isSearchBarFocused = false
+            }
+            .sheet(isPresented: $gs25ViewModel.showingFavoriteList) {
+                Text("좋아요 상품들")
             }
 
             
@@ -97,9 +100,6 @@ struct GS25View: BaseView {
                     }
                 })
             }
-            
-            
-                
         }
     }
 }

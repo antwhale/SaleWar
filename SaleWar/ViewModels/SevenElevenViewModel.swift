@@ -19,6 +19,7 @@ class SevenElevenViewModel : BaseViewModel {
     @Published var showingProductDetailView = false
     @Published var selectedProduct: Product?
     @Published var searchKeyword: String = ""
+    @Published var showingFavoriteList = false
     
     func fetchSevenElevenProducts(){
         print("fetchSevenElevenProducts, thread: \(OperationQueue.current == OperationQueue.main)")
