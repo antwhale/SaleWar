@@ -25,9 +25,18 @@ struct SaleWarTitleBar : View {
             
             Spacer()
             
-            Circle()
-                .fill(Color.orange)
-                .frame(width: 30, height: 30)
+            Button {
+                print("click favorite icon")
+            } label : {
+                Image(systemName: "heart.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 15, height: 15)
+                    .foregroundColor(.white)
+            }
+            .frame(width: 30, height: 30)
+            .background(Color.orange)
+            .clipShape(Circle())
         }
     }
 }

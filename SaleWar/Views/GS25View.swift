@@ -74,8 +74,6 @@ struct GS25View: BaseView {
             }
 
             
-            
-            
             VStack {
                 Spacer()
                     .frame(maxWidth: .infinity)
