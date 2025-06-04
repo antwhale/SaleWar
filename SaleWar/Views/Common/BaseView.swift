@@ -10,5 +10,5 @@ import SwiftUI
 
 protocol BaseView : View {
     var onSelectedTab: (SaleWarTab) -> Void { get set }
-    
+
 }

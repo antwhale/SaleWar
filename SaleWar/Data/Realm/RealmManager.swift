@@ -106,6 +106,30 @@ class RealmManager {
         }
     }
     
+//    static func searchProducts(byPartialTitle partialTitle: String) -> Results<Product> {
+//            guard let realm = try? Realm() else {
+//                print("Error: Could not initialize Realm.")
+//                // You might want to return an empty Results<Product> or handle this differently
+//                return Realm().objects(Product.self).filter("FALSE") // Returns an empty Results
+//            }
+//
+//            // Query Realm for Products where the title contains the partialTitle (case-insensitive)
+//            return realm.objects(Product.self).filter("title CONTAINS[c] %@", partialTitle)
+//        }
+    
+    func searchProducts(byPartialTitle partialTitle: String, for store: String) -> [Product] {
+        do {
+            let realm = try Realm()
+            let result = realm.objects(Product.self)
+                .filter("title CONTAINS[c] %@", partialTitle)
+                .filter("store == %@", store)   
+            return Array(result)
+        } catch {
+            print("Error searchProducts: \(error)")
+            return []
+        }
+    }
+    
     func observeProducts(store: StoreType, onUpdateProducts: @escaping ([Product]) -> Void) {
         let realm = try! Realm()
         let results = realm.objects(Product.self).filter("store == %@", store.rawValue)
@@ -121,6 +145,44 @@ class RealmManager {
             case .error(let error):
                 print("observeProducts, \(error.localizedDescription)")
             }
+        }
+    }
+    
+    //MARK: 좋아요 상품관련
+    func addFavoriteProduct(favorite product: FavoriteProduct) {
+        do {
+            let realm = try Realm()
+            realm.writeAsync {
+                realm.add(product, update: .modified)
+            }
+        } catch {
+            print("Error adding favorite product: \(error)")
+        }
+    }
+    
+    func deleteFavoriteProduct(favorite product: FavoriteProduct) {
+        do {
+            let realm = try Realm()
+            realm.writeAsync {
+                if self.isFavoriteProduct(productName: product.title) {
+                    let productsToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", product.title)
+                    realm.delete(productsToDelete)
+                    print("Finished deleteFavoriteProduct")
+                }
+            }
+        } catch {
+            print("Error deleting favorite product: \(error)")
+        }
+    }
+    
+    func isFavoriteProduct(productName: String) -> Bool {
+        do {
+            let realm = try Realm()
+            let favoriteProduct = realm.objects(FavoriteProduct.self).filter("title == %@", productName).first
+            return favoriteProduct != nil
+        } catch {
+            print("Error fetching favorite products: \(error)")
+            return false
         }
     }
     

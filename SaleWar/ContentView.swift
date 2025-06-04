@@ -19,17 +19,17 @@ struct ContentView: View {
             VStack {
                 if(appViewModel.selectedTab == .gs25) {
                     GS25View(
-                        onSelectedTab: { (tab) in appViewModel.selectedTab = tab },
+                        onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab }},
                         gs25ViewModel: GS25ViewModel()
                     )
                 } else if(appViewModel.selectedTab == .cu) {
                     CUView(
-                        onSelectedTab: { (tab) in appViewModel.selectedTab = tab },
+                        onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab} },
                         cuViewModel: CUViewModel()
                     )
                 } else if(appViewModel.selectedTab == .seven_eleven) {
                     SevenElevenView(
-                        onSelectedTab: { (tab) in appViewModel.selectedTab = tab },
+                        onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab} },
                         sevenElevenViewModel: SevenElevenViewModel()
                     )
                 }
@@ -44,19 +44,19 @@ struct SaleWarTabView: View {
     var body: some View {
         HStack {
             SaleWarTabItem(
-                brand_logo: "gs25_logo",
+                storeType: StoreType.gs25,
                 onSelectedTab: onSelectedTab
             )
             .layoutPriority(1)
 
             SaleWarTabItem(
-                brand_logo: "cu_logo",
+                storeType: StoreType.cu,
                 onSelectedTab: onSelectedTab
             )
             .layoutPriority(1)
             
             SaleWarTabItem(
-                brand_logo: "7-eleven_logo",
+                storeType: StoreType.sevenEleven,
                 onSelectedTab: onSelectedTab
             )
             .layoutPriority(1)
@@ -69,15 +69,15 @@ struct SaleWarTabView: View {
 }
 
 struct SaleWarTabItem: View {
-    let brand_logo: String
+    let storeType: StoreType
     var onSelectedTab: (SaleWarTab) -> Void
     var currentTab : SaleWarTab {
         get {
-            if(brand_logo == "gs25_logo") {
+            if(storeType == StoreType.gs25) {
                 return .gs25
-            } else if(brand_logo == "cu_logo") {
+            } else if(storeType == StoreType.cu) {
                 return .cu
-            } else if(brand_logo == "7-eleven_logo") {
+            } else if(storeType == StoreType.sevenEleven) {
                 return .seven_eleven
             } else {
                 return .gs25
@@ -87,10 +87,10 @@ struct SaleWarTabItem: View {
 
     var body: some View {
         Button(action: {
-            print("Click \(brand_logo) tab")
+            print("Click \(storeType.rawValue) tab")
             onSelectedTab(currentTab)
         }) {
-            Image(brand_logo) // Replace with your actual image
+            Image(storeType.brandLogo) // Replace with your actual image
             .resizable()
             .scaledToFit()
             .frame(width: 50, height: 50)

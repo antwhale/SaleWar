@@ -11,14 +11,13 @@ import SwiftUI
 struct GS25View: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
     @ObservedObject var gs25ViewModel : GS25ViewModel
-    
+    @FocusState var isSearchBarFocused: Bool
+
     var body: some View {
         
         ZStack() {
             BaseBackgroundView()
 
-    
-                        
             VStack {
                 SaleWarTitleBar()
                 
@@ -30,7 +29,11 @@ struct GS25View: BaseView {
                     .foregroundColor(.black)
                     .padding(.bottom)
                 
-                SaleWarSearchBar()
+                SaleWarSearchBar(searchText: $gs25ViewModel.searchKeyword)
+                    .focused($isSearchBarFocused)
+                    .onAppear {
+                        gs25ViewModel.observeSearchKeyword()
+                    }
                 
                 Spacer(minLength: 8)
                 
@@ -46,27 +49,32 @@ struct GS25View: BaseView {
                         LazyVGrid(columns: columns, spacing: 15, content: {
                             ForEach(gs25ViewModel.productList, id: \.self) { product in
                                 ProductGridItem(product: product){
-                                    gs25ViewModel.showingProductDetailView = true
+                                    if(isSearchBarFocused) {
+                                        isSearchBarFocused = false
+                                    } else {
+                                        gs25ViewModel.showingProductDetailView = true
+                                        gs25ViewModel.selectedProduct = product
+                                    }
+                                    
                                 }
 //                                    .frame(width: itemWidth, height: 300)
                             }
                         })
                         .frame(maxHeight: .infinity)
+                        .autocorrectionDisabled(true)
                         .onAppear {
-//                            gs25ViewModel.fetchGS25Products()
                             gs25ViewModel.observeGS25Products()
                         }
                     }
                 }
             }
             .padding()
-            .alert(isPresented: $gs25ViewModel.showingProductDetailView) {
-                Alert(
-                    title: Text("Test Alert"),
-                    message: Text("No product details available."),
-                    dismissButton: .default(Text("OK"))
-                )
+            .onTapGesture {
+                isSearchBarFocused = false
             }
+
+            
+            
             
             VStack {
                 Spacer()
@@ -74,7 +82,22 @@ struct GS25View: BaseView {
                 SaleWarTabView(
                     onSelectedTab: onSelectedTab
                 )
-                
+            }
+            
+            if(gs25ViewModel.showingProductDetailView) {
+                ProductDetailView(
+                    product: $gs25ViewModel.selectedProduct,
+                    isFavoriteProduct: gs25ViewModel.isFavoriteProduct(gs25ViewModel.selectedProduct!),
+                    onCanceledDetailView: {
+                    gs25ViewModel.showingProductDetailView = false
+                }, onClickedFavoriteIcon: { product in
+                    let isFavorite = gs25ViewModel.isFavoriteProduct(product)
+                    if isFavorite {
+                        gs25ViewModel.deleteFavoriteProduct(product)
+                    } else {
+                        gs25ViewModel.addFavoriteProduct(product)
+                    }
+                })
             }
             
             

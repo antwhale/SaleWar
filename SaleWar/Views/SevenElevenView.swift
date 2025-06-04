@@ -11,6 +11,8 @@ import SwiftUI
 struct SevenElevenView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
     @ObservedObject var sevenElevenViewModel : SevenElevenViewModel
+    @FocusState var isSearchBarFocused: Bool
+
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -27,7 +29,11 @@ struct SevenElevenView: BaseView {
                     .foregroundColor(.black)
                     .padding(.bottom)
                 
-                SaleWarSearchBar()
+                SaleWarSearchBar(searchText: $sevenElevenViewModel.searchKeyword)
+                    .focused($isSearchBarFocused)
+                    .onAppear {
+                        sevenElevenViewModel.observeSearchKeyword()
+                    }
                 
                 GeometryReader { geometry in
                     ScrollView() {
@@ -40,9 +46,13 @@ struct SevenElevenView: BaseView {
                         LazyVGrid(columns: columns, spacing: 15, content: {
                             ForEach(sevenElevenViewModel.productList, id: \.self) { product in
                                 ProductGridItem(product: product){
-                                    
+                                    if isSearchBarFocused {
+                                        isSearchBarFocused = false
+                                    } else {
+                                        sevenElevenViewModel.showingProductDetailView = true
+                                        sevenElevenViewModel.selectedProduct = product
+                                    }
                                 }
-//                                    .frame(width: itemWidth, height: 300)
                             }
                         })
                         .frame(maxHeight: .infinity)
@@ -54,10 +64,33 @@ struct SevenElevenView: BaseView {
                 }
             }
             .padding()
+            .onTapGesture {
+                isSearchBarFocused = false
+            }
             
-            SaleWarTabView(
-                onSelectedTab: onSelectedTab
-            )
+            VStack {
+                Spacer()
+                    .frame(maxWidth: .infinity)
+                SaleWarTabView(
+                    onSelectedTab: onSelectedTab
+                )
+            }
+            
+            if(sevenElevenViewModel.showingProductDetailView) {
+                ProductDetailView(
+                    product: $sevenElevenViewModel.selectedProduct,
+                    isFavoriteProduct: sevenElevenViewModel.isFavoriteProduct(sevenElevenViewModel.selectedProduct!),
+                    onCanceledDetailView: {
+                        sevenElevenViewModel.showingProductDetailView = false
+                }, onClickedFavoriteIcon: { product in
+                    let isFavorite = sevenElevenViewModel.isFavoriteProduct(product)
+                    if isFavorite {
+                        sevenElevenViewModel.deleteFavoriteProduct(product)
+                    } else {
+                        sevenElevenViewModel.addFavoriteProduct(product)
+                    }
+                })
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ import SwiftUI
 struct CUView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
     @ObservedObject var cuViewModel : CUViewModel
+    @FocusState var isSearchBarFocused: Bool
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -27,7 +28,11 @@ struct CUView: BaseView {
                     .foregroundColor(.black)
                     .padding(.bottom)
                 
-                SaleWarSearchBar()
+                SaleWarSearchBar(searchText: $cuViewModel.searchKeyword)
+                    .focused($isSearchBarFocused)
+                    .onAppear {
+                        cuViewModel.observeSearchKeyword()
+                    }
                 
                 GeometryReader { geometry in
                     ScrollView() {
@@ -41,9 +46,14 @@ struct CUView: BaseView {
                         LazyVGrid(columns: columns, spacing: 15, content: {
                             ForEach(cuViewModel.productList, id: \.self) { product in
                                 ProductGridItem(product: product){
+                                    if isSearchBarFocused {
+                                        isSearchBarFocused = false
+                                    } else {
+                                        cuViewModel.showingProductDetailView = true
+                                        cuViewModel.selectedProduct = product
+                                    }
                                     
                                 }
-//                                    .frame(width: itemWidth, height: 300)
                             }
                         })
                         .frame(maxHeight: .infinity)
@@ -54,10 +64,33 @@ struct CUView: BaseView {
                 }
             }
             .padding()
+            .onTapGesture {
+                isSearchBarFocused = false
+            }
             
-            SaleWarTabView(
-                onSelectedTab: onSelectedTab
-            )
+            VStack {
+                Spacer()
+                    .frame(maxWidth: .infinity)
+                SaleWarTabView(
+                    onSelectedTab: onSelectedTab
+                )
+            }
+            
+            if(cuViewModel.showingProductDetailView) {
+                ProductDetailView(
+                    product: $cuViewModel.selectedProduct,
+                    isFavoriteProduct: cuViewModel.isFavoriteProduct(cuViewModel.selectedProduct!),
+                    onCanceledDetailView: {
+                        cuViewModel.showingProductDetailView = false
+                }, onClickedFavoriteIcon: { product in
+                    let isFavorite = cuViewModel.isFavoriteProduct(product)
+                    if isFavorite {
+                        cuViewModel.deleteFavoriteProduct(product)
+                    } else {
+                        cuViewModel.addFavoriteProduct(product)
+                    }
+                })
+            }
         }
     }
 }

@@ -25,6 +25,14 @@ enum StoreType: String, CaseIterable {
         case .sevenEleven: return "https://raw.githubusercontent.com/antwhale/SaleWar/main/SevenEleven_Product.json"
         }
     }
+    
+    var brandLogo : String {
+        switch self {
+        case .gs25: return "gs25_logo"
+        case .cu: return "cu_logo"
+        case .sevenEleven: return "7-eleven_logo"
+        }
+    }
 }
 
 struct ProductJSON: Decodable {

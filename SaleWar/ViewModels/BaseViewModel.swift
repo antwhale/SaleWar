@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 protocol BaseViewModel : ObservableObject {
     var cancellableBag: Set<AnyCancellable> { get }
