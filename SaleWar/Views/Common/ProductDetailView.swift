@@ -127,6 +127,6 @@ struct ProductDetailView: View {
     }
 }
 
-#Preview {
+//#Preview {
 //    ProductDetailView(product: Binding<nil>)
-}
+//}

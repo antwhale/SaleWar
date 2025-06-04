@@ -28,6 +28,6 @@ struct SaleWarSearchBar : View {
     }
 }
 
-#Preview {
+//#Preview {
 //    SaleWarSearchBar()
-}
+//}
