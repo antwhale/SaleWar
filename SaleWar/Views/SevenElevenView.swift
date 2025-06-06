@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SevenElevenView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
-    @ObservedObject var sevenElevenViewModel : SevenElevenViewModel
+    @StateObject var sevenElevenViewModel : SevenElevenViewModel
     @FocusState var isSearchBarFocused: Bool
 
     

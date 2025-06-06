@@ -13,6 +13,7 @@ class RealmManager {
     var gs25NotificationToken: NotificationToken?
     var cuNotificationToken: NotificationToken?
     var sevenElevenNotificationToken: NotificationToken?
+    var favoriteProductsToken : NotificationToken?
 //    lazy var realm: Realm = {
 //        do {
 //            print("Realm init, thread: \(OperationQueue.current == OperationQueue.main)")
@@ -165,9 +166,12 @@ class RealmManager {
             let realm = try Realm()
             realm.writeAsync {
                 if self.isFavoriteProduct(productName: product.title) {
-                    let productsToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", product.title)
-                    realm.delete(productsToDelete)
-                    print("Finished deleteFavoriteProduct")
+                    let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", product.title)
+                    if !productToDelete.isInvalidated {
+                        realm.delete(productToDelete)
+                        print("Finished deleteFavoriteProduct")
+                    }
+                    
                 }
             }
         } catch {
@@ -186,8 +190,30 @@ class RealmManager {
         }
     }
     
+    func getFavoriteProducts() -> Results<FavoriteProduct> {
+        print(#fileID, #function, #line, "deinit")
+        let realm = try! Realm()
+        return realm.objects(FavoriteProduct.self)
+    }
+    
+    func observeFavoriteProducts(onUpdateFavoriteProducts: @escaping ([FavoriteProduct]) -> Void) {
+        let realm = try! Realm()
+        let results = realm.objects(FavoriteProduct.self)
+        
+        favoriteProductsToken = results.observe() { change in
+            switch change {
+            case .initial :
+                onUpdateFavoriteProducts(Array(results))
+            case .update(_, let deletions, let insertions, let modifications):
+                print(#fileID, #function, #line, "onUpdate FavoriteProducts")
+            case .error(let error):
+                print("observeFavoriteProducts, \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func invalidateProductNotificationToken(for store: StoreType) {
-        print("invalidateGS25NotificationToken")
+        print("invalidateProductNotificationToken \(store.rawValue)")
         
         if(store == .gs25) {
             gs25NotificationToken?.invalidate()
@@ -196,6 +222,11 @@ class RealmManager {
         } else if(store == .sevenEleven) {
             sevenElevenNotificationToken?.invalidate()
         }
+    }
+    
+    func invalidateFavoriteProductsNotificationToken() {
+        print("invalidateFavoriteProductsNotificationToken")
+        favoriteProductsToken?.invalidate()
     }
     
     //MARK: json 파일 업데이트 정보

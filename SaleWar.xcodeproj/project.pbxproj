@@ -36,6 +36,7 @@
 		F87A42042DCA466A00EE0FAE /* BaseViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */; };
 		F8B369232DC92D500039A952 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B369222DC92D500039A952 /* RealmManager.swift */; };
 		F8C484EA2DE2138C00C0738D /* ProductGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C484E92DE2138C00C0738D /* ProductGridItem.swift */; };
+		F8D4CE872DF2FB93001DB1DE /* FavoriteProductList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8D4CE862DF2FB93001DB1DE /* FavoriteProductList.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +101,7 @@
 		F87A42032DCA466A00EE0FAE /* BaseViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewModel.swift; sourceTree = "<group>"; };
 		F8B369222DC92D500039A952 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		F8C484E92DE2138C00C0738D /* ProductGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductGridItem.swift; sourceTree = "<group>"; };
+		F8D4CE862DF2FB93001DB1DE /* FavoriteProductList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteProductList.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,7 +169,6 @@
 				F8227B4A2DC7836F00C8EB21 /* Views */,
 				F8227B492DC781D500C8EB21 /* ViewModels */,
 				F8227B1F2DC76F9F00C8EB21 /* SaleWarApp.swift */,
-				F8227B212DC76F9F00C8EB21 /* ContentView.swift */,
 				F8227B232DC76F9F00C8EB21 /* Assets.xcassets */,
 				F8227B252DC76F9F00C8EB21 /* Preview Content */,
 			);
@@ -231,6 +232,8 @@
 				F83844722DC8F83E0089F869 /* BaseView.swift */,
 				F8C484E92DE2138C00C0738D /* ProductGridItem.swift */,
 				F36E47E12DE5854F0033285C /* ProductDetailView.swift */,
+				F8D4CE862DF2FB93001DB1DE /* FavoriteProductList.swift */,
+				F8227B212DC76F9F00C8EB21 /* ContentView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -426,6 +429,7 @@
 				F83844732DC8F83E0089F869 /* BaseView.swift in Sources */,
 				F36E47E42DE5BE9B0033285C /* FavoriteProduct.swift in Sources */,
 				F8227B502DC794E200C8EB21 /* SevenElevenView.swift in Sources */,
+				F8D4CE872DF2FB93001DB1DE /* FavoriteProductList.swift in Sources */,
 				F81B6C6C2DC934AE00D88C13 /* Product.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

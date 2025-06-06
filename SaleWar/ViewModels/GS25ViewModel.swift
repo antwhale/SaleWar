@@ -11,7 +11,6 @@ import Combine
 class GS25ViewModel: BaseViewModel {
     init() {
         print("GS25ViewModel init")
-        
     }
     
     var cancellableBag = Set<AnyCancellable>()
@@ -132,6 +131,8 @@ class GS25ViewModel: BaseViewModel {
     }
     
     deinit {
+        print(#fileID, #function, #line, "deinit")
+
         let realmManager = RealmManager.shared
         realmManager.invalidateProductNotificationToken(for: .gs25)
         

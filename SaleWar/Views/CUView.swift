@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CUView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
-    @ObservedObject var cuViewModel : CUViewModel
+    @StateObject var cuViewModel : CUViewModel
     @FocusState var isSearchBarFocused: Bool
     
     var body: some View {
@@ -105,3 +105,4 @@ struct CUView: BaseView {
         cuViewModel: CUViewModel()
     )
 }
+

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ProductGridItem: View {
-    let product: Product
+    var product: Product
     var onProductClicked: () -> Void
 
     var body: some View {

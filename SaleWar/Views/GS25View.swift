@@ -10,7 +10,8 @@ import SwiftUI
 
 struct GS25View: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
-    @ObservedObject var gs25ViewModel : GS25ViewModel
+    @StateObject var gs25ViewModel : GS25ViewModel
+    @ObservedObject var appViewModel: AppViewModel
     @FocusState var isSearchBarFocused: Bool
 
     var body: some View {
@@ -57,7 +58,6 @@ struct GS25View: BaseView {
                                         gs25ViewModel.selectedProduct = product
                                     }
                                 }
-//                                    .frame(width: itemWidth, height: 300)
                             }
                         })
                         .frame(maxHeight: .infinity)
@@ -73,7 +73,10 @@ struct GS25View: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $gs25ViewModel.showingFavoriteList) {
-                Text("좋아요 상품들")
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+                    
+                }
             }
 
             
@@ -108,6 +111,7 @@ struct GS25View: BaseView {
     
     GS25View(
         onSelectedTab: { (_) in },
-        gs25ViewModel: GS25ViewModel()
+        gs25ViewModel: GS25ViewModel(),
+        appViewModel: AppViewModel()
     )
 }

@@ -20,7 +20,8 @@ struct ContentView: View {
                 if(appViewModel.selectedTab == .gs25) {
                     GS25View(
                         onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab }},
-                        gs25ViewModel: GS25ViewModel()
+                        gs25ViewModel: GS25ViewModel(),
+                        appViewModel: appViewModel
                     )
                 } else if(appViewModel.selectedTab == .cu) {
                     CUView(
@@ -34,7 +35,8 @@ struct ContentView: View {
                     )
                 }
             }
-        }.edgesIgnoringSafeArea(.bottom)
+        }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 

@@ -7,22 +7,25 @@
 
 import Foundation
 import Combine
+import RealmSwift
 
 class AppViewModel: BaseViewModel {
-    let cancellableBag = Set<AnyCancellable>()
-    
+    var cancellableBag = Set<AnyCancellable>()
 //    private var realmManager: RealmManager
     
     @Published var selectedTab : SaleWarTab = .gs25
     @Published var fetchingFlag = false
+    
+    @Published var favoriteProducts : [FavoriteProduct] = []
         
     init() {
         print("AppViewModel init")
-        
+                
         checkProductVersion()
+        observeFavoriteProducts()
     }
     
-    func checkProductVersion()  {
+    func checkProductVersion() {
         print(#fileID, #function, #line, "checkProductVersion")
         
         Task {
@@ -42,9 +45,32 @@ class AppViewModel: BaseViewModel {
                 }
                 case .failure(let error):
                 print(#fileID, #function, #line, "checkProductVersion, failure : \(error.localizedDescription)")
-
             }
         }
+    }
+    
+    func observeFavoriteProducts() {
+        print(#fileID, #function, #line, "observeFavoriteProductList")
+
+        let realmManager = RealmManager.shared
+        realmManager.observeFavoriteProducts() { [weak self] favoriteProducts in
+            guard let self = self else { return }
+            self.favoriteProducts = favoriteProducts
+        }
+    }
+    
+    func getFavoriteProducts() -> Results<FavoriteProduct> {
+        print(#fileID, #function, #line, "getFavoriteProducts")
+
+        let realmManager = RealmManager.shared
+        return realmManager.getFavoriteProducts()
+    }
+    
+    func deleteFavoriteProduct(product: FavoriteProduct) {
+        print(#fileID, #function, #line, "deleteFavoriteProduct")
+        
+        let realmManager = RealmManager.shared
+        realmManager.deleteFavoriteProduct(favorite: product)
     }
     
     func initAllSaleInfo() {
@@ -204,5 +230,12 @@ class AppViewModel: BaseViewModel {
         dateFormatter.dateFormat = "yyMM"
         let currentDate = Date()
         return dateFormatter.string(from: currentDate)
+    }
+    
+    deinit {
+        print("AppViewModel deinit")
+        
+        let realmManager = RealmManager.shared
+        realmManager.invalidateFavoriteProductsNotificationToken()
     }
 }
