@@ -37,6 +37,11 @@ struct ContentView: View {
                     )
                 }
             }
+            
+            if(appViewModel.fetchingFlag) {
+                ProgressView() // Show a progress indicator while loading
+                    .frame(width: 180, height: 180)
+            }
         }
         .edgesIgnoringSafeArea(.bottom)
     }

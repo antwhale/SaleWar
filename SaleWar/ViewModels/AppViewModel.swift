@@ -15,7 +15,6 @@ class AppViewModel: BaseViewModel {
     
     @Published var selectedTab : SaleWarTab = .gs25
     @Published var fetchingFlag = false
-    
     @Published var favoriteProducts : [FavoriteProduct] = []
         
     init() {
@@ -29,6 +28,7 @@ class AppViewModel: BaseViewModel {
         print(#fileID, #function, #line, "checkProductVersion")
         
         Task {
+            fetchingFlag = true
             let result = await self.readFileAsync(from: PRODUCT_VERSION_URL)
             switch result {
                 case .success(let serverDate):
@@ -43,11 +43,18 @@ class AppViewModel: BaseViewModel {
                 } else {
                     print(#fileID, #function, #line, "Don't need to update sale info")
                 }
+                DispatchQueue.main.async { [weak self] in
+                    self?.fetchingFlag = false
+                }
                 case .failure(let error):
                 print(#fileID, #function, #line, "checkProductVersion, failure : \(error.localizedDescription)")
+                DispatchQueue.main.async { [weak self] in
+                    self?.fetchingFlag = false
+                }
             }
         }
     }
+    
     
     func observeFavoriteProducts() {
         print(#fileID, #function, #line, "observeFavoriteProductList")
