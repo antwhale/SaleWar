@@ -11,6 +11,7 @@ import SwiftUI
 struct SevenElevenView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
     @StateObject var sevenElevenViewModel : SevenElevenViewModel
+    @ObservedObject var appViewModel: AppViewModel
     @FocusState var isSearchBarFocused: Bool
 
     
@@ -69,6 +70,11 @@ struct SevenElevenView: BaseView {
             .onTapGesture {
                 isSearchBarFocused = false
             }
+            .sheet(isPresented: $sevenElevenViewModel.showingFavoriteList){
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+                }
+            }
             
             VStack {
                 Spacer()
@@ -100,6 +106,7 @@ struct SevenElevenView: BaseView {
 #Preview {
     SevenElevenView(
         onSelectedTab: {(_) in},
-        sevenElevenViewModel: SevenElevenViewModel()
+        sevenElevenViewModel: SevenElevenViewModel(),
+        appViewModel: AppViewModel()
     )
 }

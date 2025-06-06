@@ -11,6 +11,7 @@ import SwiftUI
 struct CUView: BaseView {
     var onSelectedTab: (SaleWarTab) -> Void
     @StateObject var cuViewModel : CUViewModel
+    @ObservedObject var appViewModel: AppViewModel
     @FocusState var isSearchBarFocused: Bool
     
     var body: some View {
@@ -69,6 +70,11 @@ struct CUView: BaseView {
             .onTapGesture {
                 isSearchBarFocused = false
             }
+            .sheet(isPresented: $cuViewModel.showingFavoriteList) {
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+                }
+            }
             
             VStack {
                 Spacer()
@@ -102,7 +108,8 @@ struct CUView: BaseView {
 #Preview {
     CUView(
         onSelectedTab: {(_) in},
-        cuViewModel: CUViewModel()
+        cuViewModel: CUViewModel(),
+        appViewModel: AppViewModel()
     )
 }
 

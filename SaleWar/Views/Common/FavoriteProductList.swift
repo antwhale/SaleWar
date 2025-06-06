@@ -77,14 +77,26 @@ struct FavoriteProductItem: View {
                     Spacer()
                         .frame(height: 8)
                     
-                    Text(product.saleFlag == "" ? "행사 상품이 아닙니다" : product.saleFlag)
-                        .font(.caption)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                        .background(saleFlagBackgroundColor(for: product.saleFlag))
-                        .foregroundColor(.white)
-                        .cornerRadius(5)
-                        .onTapGesture { }
+                    HStack {
+                        Text(product.saleFlag == "" ? "행사 상품이 아닙니다" : product.saleFlag)
+                            .font(.caption)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 3)
+                            .background(saleFlagBackgroundColor(for: product.saleFlag))
+                            .foregroundColor(.white)
+                            .cornerRadius(5)
+                            .onTapGesture { }
+                        
+                        Spacer()
+                            .frame(maxWidth: .infinity)
+                        
+                        Image(StoreType.getBrandLogo(from: product.store)) // Replace with your actual image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30, height: 30)
+                        .cornerRadius(15)
+                    }
+                    
                     
                     Spacer()
                         .frame(height: 8)

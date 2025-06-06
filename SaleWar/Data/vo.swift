@@ -33,6 +33,15 @@ enum StoreType: String, CaseIterable {
         case .sevenEleven: return "7-eleven_logo"
         }
     }
+    
+    static func getBrandLogo(from store: String) -> String {
+        switch store {
+        case StoreType.gs25.rawValue: return StoreType.gs25.brandLogo
+        case StoreType.cu.rawValue: return StoreType.cu.brandLogo
+        case StoreType.sevenEleven.rawValue: return StoreType.sevenEleven.brandLogo
+        default: return StoreType.gs25.brandLogo
+        }
+    }
 }
 
 struct ProductJSON: Decodable {

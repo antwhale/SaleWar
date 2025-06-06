@@ -26,12 +26,14 @@ struct ContentView: View {
                 } else if(appViewModel.selectedTab == .cu) {
                     CUView(
                         onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab} },
-                        cuViewModel: CUViewModel()
+                        cuViewModel: CUViewModel(),
+                        appViewModel: appViewModel
                     )
                 } else if(appViewModel.selectedTab == .seven_eleven) {
                     SevenElevenView(
                         onSelectedTab: { (tab) in if(appViewModel.selectedTab != tab) {appViewModel.selectedTab = tab} },
-                        sevenElevenViewModel: SevenElevenViewModel()
+                        sevenElevenViewModel: SevenElevenViewModel(),
+                        appViewModel: appViewModel
                     )
                 }
             }
