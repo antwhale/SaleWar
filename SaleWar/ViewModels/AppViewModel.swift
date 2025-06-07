@@ -40,6 +40,7 @@ class AppViewModel: BaseViewModel {
 //                initAllSaleInfo()
                 if(needToUpdate) {
                     initAllSaleInfo()
+                    updateFavoriteProducts()
                 } else {
                     print(#fileID, #function, #line, "Don't need to update sale info")
                 }
@@ -147,6 +148,26 @@ class AppViewModel: BaseViewModel {
             
             task.resume()
         }
+    }
+    
+    func updateFavoriteProducts() {
+        print(#fileID, #function, #line, "updateFavoriteProducts")
+        
+        //현재 좋아요 상품들을 db에 조회해서 존재하는지 확인
+        //있으면 놔두고 없으면 saleFlag를 빈문자열로 초기화
+        
+        DispatchQueue.global(qos: .background).async {
+            let realmManager = RealmManager.shared
+            let favoriteProducts = realmManager.getFavoriteProducts()
+            
+            favoriteProducts.forEach { favoriteProduct in
+                let isSaleProduct = realmManager.isSaleProduct(favorite: favoriteProduct)
+                if !isSaleProduct {
+                    realmManager.updateFavoriteProduct(favorite: favoriteProduct)
+                }
+            }
+        }
+
     }
     
     func saveSaleInfoUpdateDate(realmManager : RealmManager) {

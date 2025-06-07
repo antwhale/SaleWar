@@ -190,8 +190,19 @@ class RealmManager {
         }
     }
     
+    func isSaleProduct(favorite product: FavoriteProduct) -> Bool {
+        do {
+            let realm = try Realm()
+            let resultProduct = realm.objects(Product.self).filter("title == %@", product.title).first
+            return resultProduct != nil
+        } catch {
+            print("Error during isSaleProduct: \(error)")
+            return false
+        }
+    }
+    
     func getFavoriteProducts() -> Results<FavoriteProduct> {
-        print(#fileID, #function, #line, "deinit")
+        print(#fileID, #function, #line, "getFavoriteProducts")
         let realm = try! Realm()
         return realm.objects(FavoriteProduct.self)
     }
@@ -209,6 +220,20 @@ class RealmManager {
             case .error(let error):
                 print("observeFavoriteProducts, \(error.localizedDescription)")
             }
+        }
+    }
+    
+    func updateFavoriteProduct(favorite product: FavoriteProduct) {
+        do {
+            let realm = try Realm()
+            realm.writeAsync {
+                if let productToUpdate = realm.object(ofType: FavoriteProduct.self, forPrimaryKey: product.id) {
+                    print(#fileID, #function, #line, "Found productToUpdate")
+                    productToUpdate.saleFlag = ""
+                }
+            }
+        } catch {
+            print("updateFavoriteProduct: \(error)")
         }
     }
     
