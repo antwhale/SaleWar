@@ -71,9 +71,9 @@ struct CUView: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $cuViewModel.showingFavoriteList) {
-                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-                }
+//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+//                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+//                }
             }
             
             VStack {

@@ -24,20 +24,24 @@ class CUViewModel : BaseViewModel {
     @Published var showingFavoriteList = false
     
     func fetchCUProducts() {
-        print("fetchCUProducts, thread: \(OperationQueue.current == OperationQueue.main)")
-        
-        let realmManager = RealmManager.shared
-        guard let cuProducts = realmManager.getProducts(forStore: StoreType.cu.rawValue) else {
-            DispatchQueue.main.async {
-                print("No CU Products")
-                self.productList = []
-            }
-            return
-        }
-        print("cuProducts count: \(cuProducts.count)")
+        Task {
+            print("fetchCUProducts, thread: \(OperationQueue.current == OperationQueue.main)")
             
-        let cuProductsArray = Array(cuProducts)
-        self.productList = cuProductsArray
+            let realmManager = RealmManager.shared
+            guard let cuProducts = await realmManager.getProducts(forStore: StoreType.cu.rawValue) else {
+                await MainActor.run {
+                    print("No CU Products")
+                    self.productList = []
+                }
+                return
+            }
+            print("cuProducts count: \(cuProducts.count)")
+                
+            let cuProductsArray = Array(cuProducts)
+            await MainActor.run {
+                self.productList = cuProductsArray
+            }
+        }
     }
     
     func observeCUProducts() {
@@ -65,34 +69,41 @@ class CUViewModel : BaseViewModel {
             .sink { [weak self] keyword in
                 guard let self = self else { return }
                 
-                if !keyword.isEmpty {
-                    let searchResult = self.performSearch(with: keyword)
-                    self.productList = searchResult
-                } else {
-                    //전체 검색한 결과 보여주기
-                    fetchCUProducts()
+                Task {
+                    if !keyword.isEmpty {
+                        let searchResult = await self.performSearch(with: keyword)
+                        self.productList = searchResult
+                    } else {
+                        //전체 검색한 결과 보여주기
+                        self.fetchCUProducts()
+                    }
                 }
+                
             }
             .store(in: &cancellableBag)
     }
     
-    func performSearch(with keyword: String) -> [Product] {
+    func performSearch(with keyword: String) async -> [Product] {
         print("performSearch(with:) \(keyword)")
         
         let realmManager = RealmManager.shared
-        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.cu.rawValue)
+        return await realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.cu.rawValue)
     }
     
     func addFavoriteProduct(_ product: Product) {
-        print("addFavoriteProduct")
-        let realmManager = RealmManager.shared
-        realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+        Task {
+            print("addFavoriteProduct")
+            let realmManager = RealmManager.shared
+            await realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+        }
     }
     
     func deleteFavoriteProduct(_ product: Product) {
-        print("deleteFavoriteProduct")
-        let realmManager = RealmManager.shared
-        realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+        Task {
+            print("deleteFavoriteProduct")
+            let realmManager = RealmManager.shared
+            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+        }
     }
     
     func isFavoriteProduct(_ product: Product) -> Bool {

@@ -14,7 +14,7 @@ class AppViewModel: BaseViewModel {
 //    private var realmManager: RealmManager
     
     @Published var selectedTab : SaleWarTab = .gs25
-    @Published var fetchingFlag = false
+    @Published var fetchingFlag = true
     @Published var favoriteProducts : [FavoriteProduct] = []
         
     init() {
@@ -28,29 +28,32 @@ class AppViewModel: BaseViewModel {
         print(#fileID, #function, #line, "checkProductVersion")
         
         Task {
-            fetchingFlag = true
+            await MainActor.run {
+                print(#fileID, #function, #line, "fetching start")
+                fetchingFlag = true
+            }
             let result = await self.readFileAsync(from: PRODUCT_VERSION_URL)
             switch result {
                 case .success(let serverDate):
                 print(#fileID, #function, #line, "checkProductVersion, success: \(serverDate)")
-                let newDate = await getLastFetchDate()
+                let newDate = getLastFetchDate()
                 print("newDate: \(newDate)")
                 print("check date length: \(serverDate.count) vs \(newDate.count)")
                 let needToUpdate = checkUpdate(currentDate: serverDate.trimmingCharacters(in: .newlines), newDate: newDate)
-//                initAllSaleInfo()
+                    initAllSaleInfo()
+                    
                 if(needToUpdate) {
                     initAllSaleInfo()
-                    updateFavoriteProducts()
                 } else {
                     print(#fileID, #function, #line, "Don't need to update sale info")
                 }
-                DispatchQueue.main.async { [weak self] in
-                    self?.fetchingFlag = false
-                }
+                
+                
                 case .failure(let error):
                 print(#fileID, #function, #line, "checkProductVersion, failure : \(error.localizedDescription)")
-                DispatchQueue.main.async { [weak self] in
-                    self?.fetchingFlag = false
+                await MainActor.run {
+                    print(#fileID, #function, #line, "fetching End")
+                    fetchingFlag = false
                 }
             }
         }
@@ -67,124 +70,121 @@ class AppViewModel: BaseViewModel {
         }
     }
     
-    func getFavoriteProducts() -> Results<FavoriteProduct> {
+    func getFavoriteProducts() async -> Results<FavoriteProduct> {
         print(#fileID, #function, #line, "getFavoriteProducts")
 
         let realmManager = RealmManager.shared
-        return realmManager.getFavoriteProducts()
+        return await realmManager.getFavoriteProducts()
     }
     
-    func deleteFavoriteProduct(product: FavoriteProduct) {
+    func deleteFavoriteProduct(product: FavoriteProduct) async {
         print(#fileID, #function, #line, "deleteFavoriteProduct")
         
         let realmManager = RealmManager.shared
-        realmManager.deleteFavoriteProduct(favorite: product)
+        await realmManager.deleteFavoriteProduct(favorite: product)
     }
     
     func initAllSaleInfo() {
-        initSaleInfo(for: StoreType.gs25)
-        initSaleInfo(for: StoreType.cu)
-        initSaleInfo(for: StoreType.sevenEleven)
-        
+        Task {
+            await initSaleInfo(for: StoreType.gs25)
+            await initSaleInfo(for: StoreType.cu)
+            await initSaleInfo(for: StoreType.sevenEleven)
+            await updateFavoriteProducts()
+            await MainActor.run {
+                print(#fileID, #function, #line, "fetching End")
+                fetchingFlag = false
+            }
+        }
     }
     
-    func initSaleInfo(for storeType: StoreType) {
-        DispatchQueue.global(qos: .background).async {
-            print(#fileID, #function, #line, "initSaleInfo, \(storeType.rawValue)")
+    func initSaleInfo(for storeType: StoreType) async {
+        do {
             
+            print(#fileID, #function, #line, "initSaleInfo, \(storeType.rawValue)")
+                
             guard let url = URL(string: storeType.rawJSONURL) else {
                 print(#fileID, #function, #line, "Error: Invalid URL string: \(storeType.rawValue)")
                 return
             }
             print("make url object")
             
-            let task = URLSession.shared.dataTask(with: url) { data, response, error in
-                print("connecting...")
-                if let error = error {
-                    print(#fileID, #function, #line, "Network Error: \(error.localizedDescription)")
-                    return
-                }
-                
-                guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                    let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-                    print(#fileID, #function, #line, "HTTP Error: Invalid status code \(statusCode)")
-                    return
-                }
-                
-                guard let data = data else {
-                    print(#fileID, #function, #line, "Error: No data received from URL.")
-                    return
-                }
-                
-                do {
-                    let decoder = JSONDecoder()
-                    decoder.keyDecodingStrategy = .convertFromSnakeCase
-                    
-                    let productJSONs = try decoder.decode([ProductJSON].self, from: data)
-                    let realmProducts = productJSONs.map {
-                        Product(jsonProduct: $0, store: storeType.rawValue)
-                    }
-                    
-                    DispatchQueue.main.async {
-                        let realmManager = RealmManager.shared
-                        realmManager.deleteProducts(forStore: storeType.rawValue)
-                        realmManager.addProducts(products: realmProducts)
-
-                        print(#fileID, #function, #line, "RealmDB update complete!")
-                        
-                        if(storeType == .sevenEleven) {
-                            self.saveSaleInfoUpdateDate(realmManager: realmManager)
-                        }
-
-                        if let fetchedProducts = realmManager.getProducts() {
-                            print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts.count)")
-                        }
-                    }
-                    
-                } catch {
-                    print(#fileID, #function, #line, "Error decoding product data: \(error.localizedDescription)")
-                }
+            let (data, response) = try await URLSession.shared.data(from: url)
+            print("connected with \(storeType.rawValue)")
+            
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+                print(#fileID, #function, #line, "HTTP Error: Invalid status code \(statusCode)")
+                return
             }
             
-            task.resume()
+            
+            
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            
+            let productJSONs = try decoder.decode([ProductJSON].self, from: data)
+            let realmProducts = productJSONs.map {
+                Product(jsonProduct: $0, store: storeType.rawValue)
+            }
+            
+            let realmManager = RealmManager.shared
+            
+            await realmManager.deleteProducts(forStore: storeType.rawValue)
+            
+            await realmManager.addProducts(products: realmProducts)
+
+            print(#fileID, #function, #line, "RealmDB update complete!")
+            
+            if(storeType == .sevenEleven) {
+                await self.saveSaleInfoUpdateDate(realmManager: realmManager)
+            }
+            let fetchedProducts = realmManager.getProducts()
+
+            if fetchedProducts != nil {
+                print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts!.count)")
+            }
+            
+            
+        } catch {
+            print(#fileID, #function, #line, "Error decoding product data: \(error.localizedDescription)")
+            DispatchQueue.main.async { [weak self] in
+                print("fetchingFlag false")
+                self?.fetchingFlag = false
+            }
         }
+        
+            
+        
     }
     
-    func updateFavoriteProducts() {
+    func updateFavoriteProducts() async {
         print(#fileID, #function, #line, "updateFavoriteProducts")
         
         //현재 좋아요 상품들을 db에 조회해서 존재하는지 확인
         //있으면 놔두고 없으면 saleFlag를 빈문자열로 초기화
-        
-        DispatchQueue.global(qos: .background).async {
-            let realmManager = RealmManager.shared
-            let favoriteProducts = realmManager.getFavoriteProducts()
-            
-            favoriteProducts.forEach { favoriteProduct in
-                let isSaleProduct = realmManager.isSaleProduct(favorite: favoriteProduct)
-                if !isSaleProduct {
-                    realmManager.updateFavoriteProduct(favorite: favoriteProduct)
-                }
-            }
-        }
 
+        let realmManager = RealmManager.shared
+        let favoriteProducts = realmManager.getFavoriteProducts()
+        let favoriteProductArray = Array(favoriteProducts)
+        
+        for favoriteProduct in favoriteProductArray {
+            let isSaleProduct = realmManager.isSaleProduct(favorite: favoriteProduct)
+            print("\(favoriteProduct.title) isSaleProduct: \(isSaleProduct)")
+            await realmManager.updateFavoriteProduct(favorite: favoriteProduct, isSale: isSaleProduct)         
+        }
     }
     
-    func saveSaleInfoUpdateDate(realmManager : RealmManager) {
+    func saveSaleInfoUpdateDate(realmManager : RealmManager) async {
         let newDate = self.getCurrentYYMM()
         print("saveSaleInfoUpdateDate, newDate: \(newDate)")
 
-        realmManager.saveLastFetchInfo(newDate: newDate)
+        await realmManager.saveLastFetchInfo(newDate: newDate)
     }
     
-    func getLastFetchDate() async -> String {
+    func getLastFetchDate() -> String {
         print("getLastFetchDate, thread: \(OperationQueue.current == OperationQueue.main)")
         let realmManager = RealmManager.shared
-        let lastFetchInfo = realmManager.getLastFetchInfo()
-        guard let lastFetchDate = lastFetchInfo?.date else {
-            return ""
-        }
-        return lastFetchDate
+        return realmManager.getLastFetchDate() ?? ""
     }
    
     func readFileAsync(from urlString: String) async -> Result<String, Error> {

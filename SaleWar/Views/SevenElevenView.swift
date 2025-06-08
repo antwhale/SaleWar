@@ -71,9 +71,9 @@ struct SevenElevenView: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $sevenElevenViewModel.showingFavoriteList){
-                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-                }
+//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+//                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+//                }
             }
             
             VStack {

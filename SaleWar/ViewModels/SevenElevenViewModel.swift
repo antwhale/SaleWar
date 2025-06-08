@@ -21,22 +21,27 @@ class SevenElevenViewModel : BaseViewModel {
     @Published var searchKeyword: String = ""
     @Published var showingFavoriteList = false
     
-    func fetchSevenElevenProducts(){
-        print("fetchSevenElevenProducts, thread: \(OperationQueue.current == OperationQueue.main)")
-        
-        let realmManager = RealmManager.shared
-        guard let sevenElevenProducts = realmManager.getProducts(forStore: StoreType.sevenEleven.rawValue) else {
-            DispatchQueue.main.async {
-                print("No SevenEleven Products")
-                self.productList = []
+    func fetchSevenElevenProducts() {
+        Task {
+            print("fetchSevenElevenProducts, thread: \(OperationQueue.current == OperationQueue.main)")
+            
+            let realmManager = RealmManager.shared
+            guard let sevenElevenProducts = await realmManager.getProducts(forStore: StoreType.sevenEleven.rawValue) else {
+                await MainActor.run {
+                    print("No SevenEleven Products")
+                    self.productList = []
+                }
+                return
             }
-            return
+            print("sevenEleven Products count: \(sevenElevenProducts.count)")
+            
+            let sevenElevenProductsArray = Array(sevenElevenProducts)
+            
+            await MainActor.run {
+                self.productList = sevenElevenProductsArray
+
+            }
         }
-        print("sevenEleven Products count: \(sevenElevenProducts.count)")
-        
-        let sevenElevenProductsArray = Array(sevenElevenProducts)
-        
-        self.productList = sevenElevenProductsArray
     }
     
     func observeSevenElevenProducts() {
@@ -64,34 +69,41 @@ class SevenElevenViewModel : BaseViewModel {
             .sink { [weak self] keyword in
                 guard let self = self else { return }
                 
-                if !keyword.isEmpty {
-                    let searchResult = self.performSearch(with: keyword)
-                    self.productList = searchResult
-                } else {
-                    //전체 검색한 결과 보여주기
-                    fetchSevenElevenProducts()
+                Task {
+                    if !keyword.isEmpty {
+                        let searchResult = await self.performSearch(with: keyword)
+                        self.productList = searchResult
+                    } else {
+                        //전체 검색한 결과 보여주기
+                        self.fetchSevenElevenProducts()
+                    }
                 }
+                
             }
             .store(in: &cancellableBag)
     }
     
-    func performSearch(with keyword: String) -> [Product] {
+    func performSearch(with keyword: String) async -> [Product] {
         print("performSearch(with:) \(keyword)")
         
         let realmManager = RealmManager.shared
-        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.sevenEleven.rawValue)
+        return await realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.sevenEleven.rawValue)
     }
     
     func addFavoriteProduct(_ product: Product) {
-        print("addFavoriteProduct")
-        let realmManager = RealmManager.shared
-        realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+        Task {
+            print("addFavoriteProduct")
+            let realmManager = RealmManager.shared
+            await realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+        }
     }
     
     func deleteFavoriteProduct(_ product: Product) {
-        print("deleteFavoriteProduct")
-        let realmManager = RealmManager.shared
-        realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+        Task {
+            print("deleteFavoriteProduct")
+            let realmManager = RealmManager.shared
+            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+        }
     }
     
     func isFavoriteProduct(_ product: Product) -> Bool {

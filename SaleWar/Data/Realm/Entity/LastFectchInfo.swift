@@ -15,6 +15,7 @@ class LastFectchInfo: Object, ObjectKeyIdentifiable {
             self.init()
             self.date = value
     }
+    
 }
 
 

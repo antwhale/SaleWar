@@ -40,43 +40,51 @@ struct GS25View: BaseView {
                 
                 Spacer(minLength: 8)
                 
-                GeometryReader { geometry in
-                    ScrollView() {
-                        Spacer(minLength: 8)
-                        
-                        let itemWidth = (geometry.size.width - 15) / 2
-                        
-                        let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
-                        
-                        LazyVGrid(columns: columns, spacing: 15, content: {
-                            ForEach(gs25ViewModel.productList, id: \.self) { product in
-                                ProductGridItem(product: product){
-                                    if(isSearchBarFocused) {
-                                        isSearchBarFocused = false
-                                    } else {
-                                        gs25ViewModel.showingProductDetailView = true
-                                        gs25ViewModel.selectedProduct = product
+                if !appViewModel.fetchingFlag {
+                    GeometryReader { geometry in
+                        ScrollView() {
+                            Spacer(minLength: 8)
+                            
+                            let itemWidth = (geometry.size.width - 15) / 2
+                            
+                            let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]
+                            
+                            LazyVGrid(columns: columns, spacing: 15, content: {
+                                ForEach(gs25ViewModel.productList, id: \.self) { product in
+                                    ProductGridItem(product: product){
+                                        if(isSearchBarFocused) {
+                                            isSearchBarFocused = false
+                                        } else {
+                                            gs25ViewModel.showingProductDetailView = true
+                                            gs25ViewModel.selectedProduct = product
+                                        }
                                     }
                                 }
+                            })
+                            .frame(maxHeight: .infinity)
+                            .autocorrectionDisabled(true)
+                            .onAppear {
+                                gs25ViewModel.observeGS25Products()
+//                                appViewModel.updateFavoriteProducts()
                             }
-                        })
-                        .frame(maxHeight: .infinity)
-                        .autocorrectionDisabled(true)
-                        .onAppear {
-                            gs25ViewModel.observeGS25Products()
                         }
                     }
+                } else {
+                    EmptyView()
+                        
                 }
+                
             }
             .padding()
             .onTapGesture {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $gs25ViewModel.showingFavoriteList) {
-                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-                    
-                }
+//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+//                    Task {
+//                        await appViewModel.deleteFavoriteProduct(product: favoriteProduct)
+//                    }
+//                }
             }
             
             VStack {

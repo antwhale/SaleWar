@@ -79,6 +79,7 @@ struct FavoriteProductItem: View {
                     
                     HStack {
                         Text(product.saleFlag == "" ? "행사 상품이 아닙니다" : product.saleFlag)
+                            .lineLimit(1)
                             .font(.caption)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 3)
@@ -88,7 +89,6 @@ struct FavoriteProductItem: View {
                             .onTapGesture { }
                         
                         Spacer()
-                            .frame(maxWidth: .infinity)
                         
                         Image(StoreType.getBrandLogo(from: product.store)) // Replace with your actual image
                         .resizable()
