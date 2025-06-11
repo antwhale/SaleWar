@@ -153,15 +153,74 @@ class RealmManager {
     
     //MARK: 좋아요 상품관련
     func addFavoriteProduct(favorite product: FavoriteProduct) async {
+//        do {
+//            let realm = try await Realm()
+//            try await realm.asyncWrite {
+//                realm.add(product, update: .modified)
+//            }
+//        } catch {
+//            print("Error adding favorite product: \(error)")
+//        }
+        Task {
+            print("RealmManager, addFavoriteProduct")
+            do {
+                let realm = try Realm()
+                try realm.write {
+                    realm.add(product, update: .modified)
+                    print("Successfully added \(product.title) to favorites. mainThread = \(Thread.isMainThread)")
+                }
+            } catch {
+                print("Error adding favorite product: \(error)")
+            }
+            
+        }
+    }
+    
+    func clickFavoriteIcon(productInfo: ProductInfo) async {
+        print(#fileID, #function, #line, "clickFavoriteIcon")
+        
+        let isFavorite = isFavoriteProduct(productName: productInfo.title)
+        if isFavorite {
+            await deleteFavoriteProduct(productInfo: productInfo)
+        } else {
+            await addFavoriteProduct(productInfo: productInfo)
+        }
+
+    }
+    
+    func addFavoriteProduct(productInfo: ProductInfo) async {
+//        Task {
+            print("RealmManager, addFavoriteProduct")
+            do {
+                let realm = try await Realm()
+                try await realm.asyncWrite {
+                    realm.add(FavoriteProduct(productInfo: productInfo), update: .modified)
+                    print("Successfully added \(productInfo.title) to favorites. mainThread = \(Thread.isMainThread)")
+                }
+            } catch {
+                print(#fileID, #function, #line, "Error adding product: \(error)")
+            }
+            
+//        }
+    }
+    
+    func deleteFavoriteProduct(productInfo: ProductInfo) async {
         do {
             let realm = try await Realm()
             try await realm.asyncWrite {
-                realm.add(product, update: .modified)
+                let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", productInfo.title)
+                if !productToDelete.isInvalidated {
+                    realm.delete(productToDelete)
+                    print(#fileID, #function, #line, "Finished to delete FavoriteProduct")
+                }
             }
         } catch {
-            print("Error adding favorite product: \(error)")
+            print(#fileID, #function, #line, "Error delete product: \(error)")
         }
+        
     }
+    
+    
     
     func deleteFavoriteProduct(favorite product: FavoriteProduct) async {
         do {
@@ -182,17 +241,17 @@ class RealmManager {
         }
     }
     
-    func isFavoriteProduct(productName: String) async -> Bool {
-        do {
-            print(#fileID, #function, #line, "isFavoriteProduct")
-            let realm = try await Realm()
-            let favoriteProduct = realm.objects(FavoriteProduct.self).filter("title == %@", productName).first
-            return favoriteProduct != nil
-        } catch {
-            print("Error fetching favorite products: \(error)")
-            return false
-        }
-    }
+//    func isFavoriteProduct(productName: String) async -> Bool {
+//        do {
+//            print(#fileID, #function, #line, "isFavoriteProduct")
+//            let realm = try await Realm()
+//            let favoriteProduct = realm.objects(FavoriteProduct.self).filter("title == %@", productName).first
+//            return favoriteProduct != nil
+//        } catch {
+//            print("Error fetching favorite products: \(error)")
+//            return false
+//        }
+//    }
     
     func isFavoriteProduct(productName: String) -> Bool {
         do {
@@ -270,7 +329,34 @@ class RealmManager {
         }
     }
     
-    func updateFavoriteProduct(favorite product: FavoriteProduct, isSale flag: Bool) async {
+    func updateFavoriteProduct(productId: ObjectId, productTitle: String, productStore: String, productSaleFlag: String, productImg: String, productPrice: String, isSale: Bool) async {
+        do {
+            let realm = try await Realm()
+            try await realm.asyncWrite {
+                if let productToUpdate = realm.object(ofType: FavoriteProduct.self, forPrimaryKey: productId) {
+                    print(#fileID, #function, #line, "Found productToUpdate")
+                    
+                    if isSale {
+                        print(#fileID, #function, #line, "Update Favorite Product")
+                        let resultProduct = realm.objects(Product.self)
+                            .filter("title == %@", productTitle)
+                            .filter("store == %@", productStore)
+                            .first
+                        productToUpdate.saleFlag = resultProduct?.saleFlag ?? productSaleFlag
+                        productToUpdate.img = resultProduct?.img ?? productImg
+                        productToUpdate.price = resultProduct?.price ?? productPrice
+                    } else {
+                        print(#fileID, #function, #line, "This is not Sale product: \(productTitle)")
+                        productToUpdate.saleFlag = ""
+                    }
+                }
+            }
+        } catch {
+            print("updateFavoriteProduct: \(error)")
+        }
+    }
+    
+    func updateFavoriteProduct(product: FavoriteProduct, isSale flag: Bool) async {
         do {
             let realm = try await Realm()
             try await realm.asyncWrite {

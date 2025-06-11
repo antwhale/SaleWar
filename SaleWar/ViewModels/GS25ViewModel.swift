@@ -97,9 +97,9 @@ class GS25ViewModel: BaseViewModel {
         Task {
             print("addFavoriteProduct")
             let realmManager = RealmManager.shared
-            await realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+//            await realmManager.addFavoriteProduct(favorite: FavoriteProduct(product: product))
+            await realmManager.addFavoriteProduct(productInfo: ProductInfo(product: product))
         }
-        
     }
     
     func deleteFavoriteProduct(_ product: Product) {
@@ -109,6 +109,17 @@ class GS25ViewModel: BaseViewModel {
             await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
         }
       
+    }
+    
+    func clickFavoriteIcon(_ product: Product) {
+        print(#fileID, #function, #line, "clickFavoriteIcon : \(product.title), isMainThread: \(Thread.isMainThread)")
+        let productInfo = ProductInfo(product: product)
+
+        Task {
+            let realmManager = RealmManager.shared
+            await realmManager.clickFavoriteIcon(productInfo: productInfo)
+
+        }
     }
     
     func isFavoriteProduct(_ product: Product) -> Bool {

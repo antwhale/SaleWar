@@ -25,6 +25,16 @@ class FavoriteProduct: Object, ObjectKeyIdentifiable {
         self.saleFlag = product.saleFlag
         self.store = product.store
     }
+    
+    convenience init(productInfo: ProductInfo) {
+        self.init()
+        
+        self.img = productInfo.img
+        self.title = productInfo.title
+        self.price = productInfo.price
+        self.saleFlag = productInfo.saleFlag
+        self.store = productInfo.store
+    }
 }
 
 //class Product: Object, ObjectKeyIdentifiable {

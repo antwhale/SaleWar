@@ -51,3 +51,20 @@ struct ProductJSON: Decodable {
     let saleFlag: String
 }
 
+struct ProductInfo {
+     var img: String
+     var title: String
+     var price: String
+     var saleFlag: String
+     var store: String
+    
+    init(product: Product) {
+        self.img = product.img
+        self.title = product.title
+        self.price = product.price
+        self.saleFlag = product.saleFlag
+        self.store = product.store
+    }
+}
+
+

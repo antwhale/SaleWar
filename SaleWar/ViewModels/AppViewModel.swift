@@ -170,7 +170,8 @@ class AppViewModel: BaseViewModel {
         for favoriteProduct in favoriteProductArray {
             let isSaleProduct = realmManager.isSaleProduct(favorite: favoriteProduct)
             print("\(favoriteProduct.title) isSaleProduct: \(isSaleProduct)")
-            await realmManager.updateFavoriteProduct(favorite: favoriteProduct, isSale: isSaleProduct)         
+//            await realmManager.updateFavoriteProduct(favorite: favoriteProduct, isSale: isSaleProduct)         
+            await realmManager.updateFavoriteProduct(productId: favoriteProduct.id, productTitle: favoriteProduct.title, productStore: favoriteProduct.store, productSaleFlag: favoriteProduct.saleFlag, productImg: favoriteProduct.img, productPrice: favoriteProduct.price, isSale: isSaleProduct)
         }
     }
     

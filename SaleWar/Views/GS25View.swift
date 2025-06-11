@@ -102,12 +102,14 @@ struct GS25View: BaseView {
                     onCanceledDetailView: {
                     gs25ViewModel.showingProductDetailView = false
                 }, onClickedFavoriteIcon: { product in
-                    let isFavorite = gs25ViewModel.isFavoriteProduct(product)
-                    if isFavorite {
-                        gs25ViewModel.deleteFavoriteProduct(product)
-                    } else {
-                        gs25ViewModel.addFavoriteProduct(product)
-                    }
+//                    let isFavorite = gs25ViewModel.isFavoriteProduct(product)
+//                    if isFavorite {
+//                        gs25ViewModel.deleteFavoriteProduct(product)
+//                    } else {
+//                        gs25ViewModel.addFavoriteProduct(product)
+//                    }
+                    print("click favorite icon, isMainThread: \(Thread.isMainThread)")
+                    gs25ViewModel.clickFavoriteIcon(product)
                 })
             }
         }
