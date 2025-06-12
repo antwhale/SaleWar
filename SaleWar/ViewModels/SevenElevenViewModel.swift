@@ -22,26 +22,20 @@ class SevenElevenViewModel : BaseViewModel {
     @Published var showingFavoriteList = false
     
     func fetchSevenElevenProducts() {
-        Task {
             print("fetchSevenElevenProducts, thread: \(OperationQueue.current == OperationQueue.main)")
             
             let realmManager = RealmManager.shared
-            guard let sevenElevenProducts = await realmManager.getProducts(forStore: StoreType.sevenEleven.rawValue) else {
-                await MainActor.run {
-                    print("No SevenEleven Products")
-                    self.productList = []
-                }
+            guard let sevenElevenProducts = realmManager.getProducts(forStore: StoreType.sevenEleven.rawValue) else {
+                print("No SevenEleven Products")
+                self.productList = []
                 return
             }
             print("sevenEleven Products count: \(sevenElevenProducts.count)")
             
             let sevenElevenProductsArray = Array(sevenElevenProducts)
             
-            await MainActor.run {
-                self.productList = sevenElevenProductsArray
+            self.productList = sevenElevenProductsArray
 
-            }
-        }
     }
     
     func observeSevenElevenProducts() {
@@ -70,25 +64,22 @@ class SevenElevenViewModel : BaseViewModel {
             .sink { [weak self] keyword in
                 guard let self = self else { return }
                 
-                Task {
-                    if !keyword.isEmpty {
-                        let searchResult = await self.performSearch(with: keyword)
-                        self.productList = searchResult
-                    } else {
-                        //전체 검색한 결과 보여주기
-                        self.fetchSevenElevenProducts()
-                    }
+                if !keyword.isEmpty {
+                    let searchResult = self.performSearch(with: keyword)
+                    self.productList = searchResult
+                } else {
+                    //전체 검색한 결과 보여주기
+                    self.fetchSevenElevenProducts()
                 }
-                
             }
             .store(in: &cancellableBag)
     }
     
-    func performSearch(with keyword: String) async -> [Product] {
+    func performSearch(with keyword: String) -> [Product] {
         print("performSearch(with:) \(keyword)")
         
         let realmManager = RealmManager.shared
-        return await realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.sevenEleven.rawValue)
+        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.sevenEleven.rawValue)
     }
     
     func addFavoriteProduct(_ product: Product) {

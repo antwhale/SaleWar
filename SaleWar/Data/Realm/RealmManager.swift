@@ -120,9 +120,9 @@ class RealmManager {
 //            return realm.objects(Product.self).filter("title CONTAINS[c] %@", partialTitle)
 //        }
     
-    func searchProducts(byPartialTitle partialTitle: String, for store: String) async ->  [Product] {
+    func searchProducts(byPartialTitle partialTitle: String, for store: String) ->  [Product] {
         do {
-            let realm = try await Realm()
+            let realm = try Realm()
             let result = realm.objects(Product.self)
                 .filter("title CONTAINS[c] %@", partialTitle)
                 .filter("store == %@", store)   

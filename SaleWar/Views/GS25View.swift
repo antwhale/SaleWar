@@ -65,15 +65,12 @@ struct GS25View: BaseView {
                             .autocorrectionDisabled(true)
                             .onAppear {
                                 gs25ViewModel.observeGS25Products()
-//                                appViewModel.updateFavoriteProducts()
                             }
                         }
                     }
                 } else {
                     EmptyView()
-                        
                 }
-                
             }
             .padding()
             .onTapGesture {

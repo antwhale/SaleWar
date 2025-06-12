@@ -21,7 +21,7 @@ class GS25ViewModel: BaseViewModel {
     @Published var searchKeyword: String = ""
     @Published var showingFavoriteList = false
     
-    @MainActor
+//    @MainActor
     func fetchGS25Products(){
             print("fetchGS25Products, thread: \(OperationQueue.current == OperationQueue.main)")
             
@@ -65,32 +65,28 @@ class GS25ViewModel: BaseViewModel {
             .sink { [weak self] keyword in
                 guard let self = self else { return }
                 
-                Task {
-                    if !keyword.isEmpty {
-                        print(#fileID, #function, #line, "keyword : \(keyword)")
+                if !keyword.isEmpty {
+                    print(#fileID, #function, #line, "keyword : \(keyword)")
 
-                        let searchResult = await self.performSearch(with: keyword)
-                        await MainActor.run{
-                            self.productList = searchResult
-                        }
-                    } else {
-                        print(#fileID, #function, #line, "keyword is empty")
+                    let searchResult = self.performSearch(with: keyword)
+                    self.productList = searchResult
+                    
+                } else {
+                    print(#fileID, #function, #line, "keyword is empty")
 
-                        //전체 검색한 결과 보여주기
-                        await self.fetchGS25Products()
-                    }
+                    //전체 검색한 결과 보여주기
+                    self.fetchGS25Products()
                 }
-                
             }
             .store(in: &cancellableBag)
     }
     
-    func performSearch(with keyword: String) async -> [Product] {
+    func performSearch(with keyword: String) -> [Product] {
         
-        print("performSearch(with:) \(keyword)")
+        print("GS25ViewModel performSearch(with:) \(keyword)")
         
         let realmManager = RealmManager.shared
-        return await realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.gs25.rawValue)
+        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.gs25.rawValue)
     }
     
     func addFavoriteProduct(_ product: Product) {
