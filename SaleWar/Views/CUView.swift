@@ -71,9 +71,13 @@ struct CUView: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $cuViewModel.showingFavoriteList) {
-//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-//                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-//                }
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    let productTitle = favoriteProduct.title
+                    Task {
+                        await appViewModel.deleteFavoriteProduct(productTitle: productTitle)
+                    }
+                    
+                }
             }
             
             VStack {
@@ -91,12 +95,8 @@ struct CUView: BaseView {
                     onCanceledDetailView: {
                         cuViewModel.showingProductDetailView = false
                 }, onClickedFavoriteIcon: { product in
-                    let isFavorite = cuViewModel.isFavoriteProduct(product)
-                    if isFavorite {
-                        cuViewModel.deleteFavoriteProduct(product)
-                    } else {
-                        cuViewModel.addFavoriteProduct(product)
-                    }
+                    print("CUView, click favorite icon, isMainThread: \(Thread.isMainThread)")
+                    cuViewModel.clickFavoriteIcon(product)
                 })
             }
         }

@@ -21,7 +21,7 @@ class AppViewModel: BaseViewModel {
         print("AppViewModel init")
                 
         checkProductVersion()
-        observeFavoriteProducts()
+//        observeFavoriteProducts()
     }
     
     func checkProductVersion() {
@@ -70,18 +70,18 @@ class AppViewModel: BaseViewModel {
         }
     }
     
-    func getFavoriteProducts() async -> Results<FavoriteProduct> {
+    func getFavoriteProducts() -> Results<FavoriteProduct> {
         print(#fileID, #function, #line, "getFavoriteProducts")
 
         let realmManager = RealmManager.shared
-        return await realmManager.getFavoriteProducts()
+        return realmManager.getFavoriteProducts()
     }
     
-    func deleteFavoriteProduct(product: FavoriteProduct) async {
+    func deleteFavoriteProduct(productTitle: String) async {
         print(#fileID, #function, #line, "deleteFavoriteProduct")
         
         let realmManager = RealmManager.shared
-        await realmManager.deleteFavoriteProduct(favorite: product)
+        await realmManager.deleteFavoriteProduct(productTitle)
     }
     
     func initAllSaleInfo() {
@@ -90,9 +90,11 @@ class AppViewModel: BaseViewModel {
             await initSaleInfo(for: StoreType.cu)
             await initSaleInfo(for: StoreType.sevenEleven)
             await updateFavoriteProducts()
+            try await Task.sleep(nanoseconds: 1_500_000_000)
             await MainActor.run {
                 print(#fileID, #function, #line, "fetching End")
                 fetchingFlag = false
+//                observeFavoriteProducts()
             }
         }
     }

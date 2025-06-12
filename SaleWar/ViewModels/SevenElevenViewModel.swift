@@ -61,11 +61,12 @@ class SevenElevenViewModel : BaseViewModel {
     }
     
     func observeSearchKeyword() {
-        print("observeSearchKeyword")
+        print("SevenElevenViewModel observeSearchKeyword")
         
         $searchKeyword
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
             .removeDuplicates()
+            .dropFirst()
             .sink { [weak self] keyword in
                 guard let self = self else { return }
                 
@@ -98,11 +99,21 @@ class SevenElevenViewModel : BaseViewModel {
         }
     }
     
-    func deleteFavoriteProduct(_ product: Product) {
+//    func deleteFavoriteProduct(_ product: Product) {
+//        Task {
+//            print("deleteFavoriteProduct")
+//            let realmManager = RealmManager.shared
+//            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+//        }
+//    }
+    
+    func clickFavoriteIcon(_ product: Product) {
+        print(#fileID, #function, #line, "clickFavoriteIcon : \(product.title), isMainThread: \(Thread.isMainThread)")
+        let productInfo = ProductInfo(product: product)
+
         Task {
-            print("deleteFavoriteProduct")
             let realmManager = RealmManager.shared
-            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+            await realmManager.clickFavoriteIcon(productInfo: productInfo)
         }
     }
     

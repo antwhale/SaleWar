@@ -222,14 +222,14 @@ class RealmManager {
     
     
     
-    func deleteFavoriteProduct(favorite product: FavoriteProduct) async {
+    func deleteFavoriteProduct(_ productTitle: String) async {
         do {
             let realm = try await Realm()
-            let isFavoriteProduct = await isFavoriteProduct(productName: product.title)
+            let isFavoriteProduct = await isFavoriteProduct(productName: productTitle)
             
             if isFavoriteProduct {
                 try await realm.asyncWrite {
-                    let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", product.title)
+                    let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", productTitle)
                     if !productToDelete.isInvalidated {
                         realm.delete(productToDelete)
                         print("Finished deleteFavoriteProduct")

@@ -71,9 +71,12 @@ struct SevenElevenView: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $sevenElevenViewModel.showingFavoriteList){
-//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-//                    appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-//                }
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    let productTitle = favoriteProduct.title
+                    Task {
+                        await appViewModel.deleteFavoriteProduct(productTitle: productTitle)
+                    }
+                }
             }
             
             VStack {
@@ -91,12 +94,8 @@ struct SevenElevenView: BaseView {
                     onCanceledDetailView: {
                         sevenElevenViewModel.showingProductDetailView = false
                 }, onClickedFavoriteIcon: { product in
-                    let isFavorite = sevenElevenViewModel.isFavoriteProduct(product)
-                    if isFavorite {
-                        sevenElevenViewModel.deleteFavoriteProduct(product)
-                    } else {
-                        sevenElevenViewModel.addFavoriteProduct(product)
-                    }
+                    print("SevenElevenView, click favorite icon, isMainThread: \(Thread.isMainThread)")
+                    sevenElevenViewModel.clickFavoriteIcon(product)
                 })
             }
         }

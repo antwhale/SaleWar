@@ -37,6 +37,14 @@ class FavoriteProduct: Object, ObjectKeyIdentifiable {
     }
 }
 
+struct FavoriteProductInfo {
+    var img: String
+    var title: String
+    var price: String
+    var saleFlag: String
+    var store: String
+}
+
 //class Product: Object, ObjectKeyIdentifiable {
 //    @Persisted(primaryKey: true) var id: ObjectId
 //    @Persisted var img: String

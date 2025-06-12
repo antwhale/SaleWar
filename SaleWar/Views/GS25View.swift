@@ -80,11 +80,12 @@ struct GS25View: BaseView {
                 isSearchBarFocused = false
             }
             .sheet(isPresented: $gs25ViewModel.showingFavoriteList) {
-//                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
-//                    Task {
-//                        await appViewModel.deleteFavoriteProduct(product: favoriteProduct)
-//                    }
-//                }
+                FavoriteProductList(favoriteProductList: appViewModel.getFavoriteProducts()) { favoriteProduct in
+                    let productTitle = favoriteProduct.title
+                    Task {
+                        await appViewModel.deleteFavoriteProduct(productTitle: productTitle)
+                    }
+                }
             }
             
             VStack {
@@ -102,13 +103,7 @@ struct GS25View: BaseView {
                     onCanceledDetailView: {
                     gs25ViewModel.showingProductDetailView = false
                 }, onClickedFavoriteIcon: { product in
-//                    let isFavorite = gs25ViewModel.isFavoriteProduct(product)
-//                    if isFavorite {
-//                        gs25ViewModel.deleteFavoriteProduct(product)
-//                    } else {
-//                        gs25ViewModel.addFavoriteProduct(product)
-//                    }
-                    print("click favorite icon, isMainThread: \(Thread.isMainThread)")
+                    print("GS25View, click favorite icon, isMainThread: \(Thread.isMainThread)")
                     gs25ViewModel.clickFavoriteIcon(product)
                 })
             }

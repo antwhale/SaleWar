@@ -56,7 +56,7 @@ class GS25ViewModel: BaseViewModel {
     }
     
     func observeSearchKeyword() {
-        print("observeSearchKeyword")
+        print("GS25ViewModel observeSearchKeyword")
         
         $searchKeyword
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
@@ -102,14 +102,13 @@ class GS25ViewModel: BaseViewModel {
         }
     }
     
-    func deleteFavoriteProduct(_ product: Product) {
-        Task {
-            print("deleteFavoriteProduct")
-            let realmManager = RealmManager.shared
-            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
-        }
-      
-    }
+//    func deleteFavoriteProduct(_ product: Product) {
+//        Task {
+//            print("deleteFavoriteProduct")
+//            let realmManager = RealmManager.shared
+//            await realmManager.deleteFavoriteProduct(favorite: FavoriteProduct(product: product))
+//        }
+//    }
     
     func clickFavoriteIcon(_ product: Product) {
         print(#fileID, #function, #line, "clickFavoriteIcon : \(product.title), isMainThread: \(Thread.isMainThread)")
@@ -118,7 +117,6 @@ class GS25ViewModel: BaseViewModel {
         Task {
             let realmManager = RealmManager.shared
             await realmManager.clickFavoriteIcon(productInfo: productInfo)
-
         }
     }
     
