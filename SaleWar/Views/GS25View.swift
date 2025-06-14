@@ -62,7 +62,6 @@ struct GS25View: BaseView {
                                 }
                             })
                             .frame(maxHeight: .infinity)
-                            .autocorrectionDisabled(true)
                             .onAppear {
                                 gs25ViewModel.observeGS25Products()
                             }

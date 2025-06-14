@@ -18,7 +18,7 @@ struct SaleWarSearchBar : View {
                 .padding(.leading, 10)
 
             TextField("", text: $searchText, prompt: Text("Search").foregroundColor(.white))
-                .autocorrectionDisabled()
+                .autocorrectionDisabled(true)
                 .foregroundColor(.white)
                 .padding(.vertical, 10)
                 .padding(.trailing, 10)

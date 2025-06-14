@@ -15,7 +15,7 @@ struct SaleWarTitleBar : View {
         HStack {
             Image(systemName: "line.horizontal.3")
                 .font(.title2)
-                .foregroundColor(.black)
+                .foregroundColor(.white)
             
             Spacer()
             

@@ -21,7 +21,6 @@ class AppViewModel: BaseViewModel {
         print("AppViewModel init")
                 
         checkProductVersion()
-//        observeFavoriteProducts()
     }
     
     func checkProductVersion() {
@@ -40,12 +39,14 @@ class AppViewModel: BaseViewModel {
                 print("newDate: \(newDate)")
                 print("check date length: \(serverDate.count) vs \(newDate.count)")
                 let needToUpdate = checkUpdate(currentDate: serverDate.trimmingCharacters(in: .newlines), newDate: newDate)
-                    initAllSaleInfo()
-                    
+                
                 if(needToUpdate) {
                     initAllSaleInfo()
                 } else {
                     print(#fileID, #function, #line, "Don't need to update sale info")
+                    await MainActor.run {
+                        fetchingFlag = false
+                    }
                 }
                 
                 

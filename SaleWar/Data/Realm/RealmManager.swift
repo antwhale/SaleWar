@@ -294,14 +294,7 @@ class RealmManager {
                 for product in allProducts {
                     productTitlesMap[product.title] = product
                 }
-                
-                
             }
-//            let resultProduct = realm.objects(Product.self)
-//                .filter("title == %@", product.title)
-//                .filter("store == %@", product.store)
-//                .first
-//            return resultProduct != nil
         } catch {
             print("Error during updateFavoriteProducts: \(error)")
         }
