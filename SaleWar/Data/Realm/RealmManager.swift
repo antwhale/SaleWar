@@ -26,11 +26,10 @@ class RealmManager {
 //    }()
     
     //MARK: 상품관련
-    func addProduct(product: Product) async {
+    func addProduct(product: Product) {
         do {
-            let realm = try await Realm()
-            
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 realm.add(product, update: .all)
             }
         } catch {
@@ -38,11 +37,11 @@ class RealmManager {
         }
     }
     
-    func addProducts(products: [Product]) async {
+    func addProducts(products: [Product]) {
         do {
-            let realm = try await Realm()
+            let realm = try Realm()
             
-            try await realm.asyncWrite {
+            try realm.write {
                 realm.add(products, update: .all)
                 print("Added/Updated \(products.count) products in bulk.")
             }
@@ -71,23 +70,23 @@ class RealmManager {
         }
     }
     
-    func deleteProduct(product: Product) async {
-        do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
-                if let productToDelete = realm.object(ofType: Product.self, forPrimaryKey: product.id) {
-                    realm.delete(productToDelete)
-                }
-            }
-        } catch {
-            print("Error deleting product: \(error)")
-        }
-    }
+//    func deleteProduct(product: Product) async {
+//        do {
+//            let realm = try await Realm()
+//            try await realm.asyncWrite {
+//                if let productToDelete = realm.object(ofType: Product.self, forPrimaryKey: product.id) {
+//                    realm.delete(productToDelete)
+//                }
+//            }
+//        } catch {
+//            print("Error deleting product: \(error)")
+//        }
+//    }
     
-    func deleteProducts(forStore store: String) async {
+    func deleteProducts(forStore store: String) {
         do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 let productsToDelete = realm.objects(Product.self).filter("store == %@", store)
                 realm.delete(productsToDelete)
                 print("Deleted all products for store: \(store)")
@@ -97,10 +96,10 @@ class RealmManager {
         }
     }
     
-    func deleteAllProduct() async {
+    func deleteAllProduct() {
         do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 let allProducts = realm.objects(Product.self)
                 realm.delete(allProducts)
             }
@@ -188,12 +187,12 @@ class RealmManager {
 
     }
     
-    func addFavoriteProduct(productInfo: ProductInfo) async {
+    func addFavoriteProduct(productInfo: ProductInfo) {
 //        Task {
             print("RealmManager, addFavoriteProduct")
             do {
-                let realm = try await Realm()
-                try await realm.asyncWrite {
+                let realm = try Realm()
+                try realm.write {
                     realm.add(FavoriteProduct(productInfo: productInfo), update: .modified)
                     print("Successfully added \(productInfo.title) to favorites. mainThread = \(Thread.isMainThread)")
                 }
@@ -204,10 +203,10 @@ class RealmManager {
 //        }
     }
     
-    func deleteFavoriteProduct(productInfo: ProductInfo) async {
+    func deleteFavoriteProduct(productInfo: ProductInfo) {
         do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", productInfo.title)
                 if !productToDelete.isInvalidated {
                     realm.delete(productToDelete)
@@ -222,13 +221,13 @@ class RealmManager {
     
     
     
-    func deleteFavoriteProduct(_ productTitle: String) async {
+    func deleteFavoriteProduct(_ productTitle: String) {
         do {
-            let realm = try await Realm()
-            let isFavoriteProduct = await isFavoriteProduct(productName: productTitle)
+            let realm = try Realm()
+            let isFavoriteProduct = isFavoriteProduct(productName: productTitle)
             
             if isFavoriteProduct {
-                try await realm.asyncWrite {
+                try realm.write {
                     let productToDelete = realm.objects(FavoriteProduct.self).filter("title == %@", productTitle)
                     if !productToDelete.isInvalidated {
                         realm.delete(productToDelete)
@@ -281,14 +280,14 @@ class RealmManager {
         }
     }
     
-    func updateFavoriteProducts() async {
+     func updateFavoriteProducts() {
         do {
             print(#fileID, #function, #line, "updateFavoriteProducts")
 
-            let realm = try await Realm()
+            let realm = try Realm()
             let favoriteProductsToUpdate = Array(realm.objects(FavoriteProduct.self))
 
-            try await realm.asyncWrite {
+            try realm.write {
                 let allProducts = realm.objects(Product.self)
                 var productTitlesMap: [String: Product] = [:]
                 for product in allProducts {
@@ -322,10 +321,10 @@ class RealmManager {
         }
     }
     
-    func updateFavoriteProduct(productId: ObjectId, productTitle: String, productStore: String, productSaleFlag: String, productImg: String, productPrice: String, isSale: Bool) async {
+    func updateFavoriteProduct(productId: ObjectId, productTitle: String, productStore: String, productSaleFlag: String, productImg: String, productPrice: String, isSale: Bool) {
         do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 if let productToUpdate = realm.object(ofType: FavoriteProduct.self, forPrimaryKey: productId) {
                     print(#fileID, #function, #line, "Found productToUpdate")
                     
@@ -349,10 +348,10 @@ class RealmManager {
         }
     }
     
-    func updateFavoriteProduct(product: FavoriteProduct, isSale flag: Bool) async {
+    func updateFavoriteProduct(product: FavoriteProduct, isSale flag: Bool) {
         do {
-            let realm = try await Realm()
-            try await realm.asyncWrite {
+            let realm = try Realm()
+            try realm.write {
                 if let productToUpdate = realm.object(ofType: FavoriteProduct.self, forPrimaryKey: product.id) {
                     print(#fileID, #function, #line, "Found productToUpdate")
                     
@@ -394,13 +393,13 @@ class RealmManager {
     }
     
     //MARK: json 파일 업데이트 정보
-    func saveLastFetchInfo(newDate: String) async {
+    func saveLastFetchInfo(newDate: String) {
             print("Attempting to save LastFetchInfo with date: \(newDate)")
             do {
-                let realm = try await Realm() // Get a Realm instance on the current Task's actor
+                let realm = try Realm() // Get a Realm instance on the current Task's actor
 
                 // All Realm modifications must be done within a write transaction
-                try await realm.asyncWrite {
+                try realm.write {
                     // Create a new LastFectchInfo object with the newDate.
                     let newFetchInfo = LastFectchInfo(value: newDate)
 

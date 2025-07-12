@@ -48,6 +48,7 @@ struct ProductDetailView: View {
                         VStack(alignment: .leading) {
                             Text(product?.title ?? "")
                                 .font(.subheadline)
+                                .foregroundColor(.black)
                                 .fontWeight(.semibold)
                                 .lineLimit(2) // Limit to 2 lines, truncate if longer
                                 .multilineTextAlignment(.leading)
@@ -58,7 +59,7 @@ struct ProductDetailView: View {
                             
                             Text(product?.price ?? "")
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.gray)
                                 .onTapGesture { }
                             
                             Spacer()

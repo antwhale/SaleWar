@@ -40,13 +40,14 @@ struct ProductGridItem: View {
             
             Text(product.title)
                 .font(.subheadline)
+                .foregroundColor(.black)
                 .fontWeight(.semibold)
                 .lineLimit(2) // Limit to 2 lines, truncate if longer
                 .multilineTextAlignment(.center)
             
             Text(product.price)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.gray)
             
             Text(product.saleFlag)
                 .font(.caption)

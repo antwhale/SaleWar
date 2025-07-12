@@ -160,7 +160,7 @@ class AppViewModel: BaseViewModel {
         
     }
     
-    func updateFavoriteProducts() async {
+    func updateFavoriteProducts() {
         print(#fileID, #function, #line, "updateFavoriteProducts")
         
         //현재 좋아요 상품들을 db에 조회해서 존재하는지 확인
@@ -174,7 +174,7 @@ class AppViewModel: BaseViewModel {
             let isSaleProduct = realmManager.isSaleProduct(favorite: favoriteProduct)
             print("\(favoriteProduct.title) isSaleProduct: \(isSaleProduct)")
 //            await realmManager.updateFavoriteProduct(favorite: favoriteProduct, isSale: isSaleProduct)         
-            await realmManager.updateFavoriteProduct(productId: favoriteProduct.id, productTitle: favoriteProduct.title, productStore: favoriteProduct.store, productSaleFlag: favoriteProduct.saleFlag, productImg: favoriteProduct.img, productPrice: favoriteProduct.price, isSale: isSaleProduct)
+            realmManager.updateFavoriteProduct(productId: favoriteProduct.id, productTitle: favoriteProduct.title, productStore: favoriteProduct.store, productSaleFlag: favoriteProduct.saleFlag, productImg: favoriteProduct.img, productPrice: favoriteProduct.price, isSale: isSaleProduct)
         }
     }
     
@@ -218,6 +218,7 @@ class AppViewModel: BaseViewModel {
     }
 
     //true면 상품정보 다시 읽어와야하고 false면 최신 상품정보 저장 중이므로 업데이트 필요없음
+    //currentDate: 서버 세일정보 버전 | newDate: 앱 최근 세일정보 버전
     func checkUpdate(currentDate: String, newDate: String) -> Bool {
         print("checkUpdate, currentDate: \(currentDate) newDate: \(newDate) count: \(currentDate.count) \(newDate.count)")
         // Check if the input strings are valid.

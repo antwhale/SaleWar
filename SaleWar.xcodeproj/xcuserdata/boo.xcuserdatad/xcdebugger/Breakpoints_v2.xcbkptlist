@@ -3,4 +3,20 @@
    uuid = "9F13CA34-F846-42D2-B1F6-4443998095C3"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F8F4FA05-D077-42B2-8F29-6AEC5B6F209D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../var/folders/1w/ty7kj8pd10l_dtbqqh_9f68r0000gn/T/swift-generated-sources/@__swiftmacro_7SaleWar0023RealmManagerswift_elFCffMX230_43_9isolationfMf_.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1"
+            endingLineNumber = "1">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>
