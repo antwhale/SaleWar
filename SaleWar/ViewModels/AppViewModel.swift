@@ -16,6 +16,7 @@ class AppViewModel: BaseViewModel {
     @Published var selectedTab : SaleWarTab = .gs25
     @Published var fetchingFlag = true
     @Published var favoriteProducts : [FavoriteProduct] = []
+    @Published var updateFlag = false
         
     init() {
         print("AppViewModel init")
@@ -46,9 +47,26 @@ class AppViewModel: BaseViewModel {
 
                 if(needToUpdate) {
                     //업데이트 팝업
-                    initAllSaleInfo()
+                    await MainActor.run {
+                        updateFlag = true
+                    }
+                    
                 } else {
                     //데이터 최신인지 확인 -> 최신이면 바로 다음화면 / 최신아니면
+                    let currentDBVersion = RealmManager.shared.getLastFetchDate()
+                    
+                    let currentYYMM = self.getCurrentYYMM()
+                    
+                    print("currentDBVersion: \(currentDBVersion) , currentYYMM: \(currentYYMM)")
+
+                    if(currentDBVersion == currentYYMM) {
+                        //DB 최신상태
+                    } else {
+                        //DB 최신상태아니라서 업데이트 필요
+                        initAllSaleInfo()
+                    }
+                    
+                    initAllSaleInfo()
                     await MainActor.run {
                         fetchingFlag = false
                     }

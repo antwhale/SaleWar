@@ -44,6 +44,18 @@ struct ContentView: View {
             }
         }
         .edgesIgnoringSafeArea(.bottom)
+        .alert("업데이트 안내", isPresented: $appViewModel.updateFlag){
+            Button("확인", role: .none) {
+                print("확인 클릭")
+                let appID = "6747519208"
+                    if let url = URL(string: "itms-apps://itunes.apple.com/app/\(appID)"),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+            }
+        } message: {
+            Text("최신 버전의 앱으로 업데이트해주세요")
+        }
     }
 }
 

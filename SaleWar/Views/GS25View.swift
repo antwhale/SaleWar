@@ -68,7 +68,8 @@ struct GS25View: BaseView {
                         }
                     }
                 } else {
-                    EmptyView()
+                    Spacer()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .padding()
