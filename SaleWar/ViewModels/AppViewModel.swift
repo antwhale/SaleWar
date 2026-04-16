@@ -35,10 +35,7 @@ class AppViewModel: BaseViewModel {
             let result = await self.readFileAsync(from: PRODUCT_VERSION_URL)
             switch result {
                 case .success(let serverVersion):
-                
-//                let newDate = getLastFetchDate()
-//                print("newDate: \(newDate)")
-//                print("check date length: \(serverDate.count) vs \(newDate.count)")
+
                 let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
                 print(#fileID, #function, #line, "currentVersion: \(currentVersion), serverVersion: \(serverVersion)")
 
@@ -49,26 +46,26 @@ class AppViewModel: BaseViewModel {
                     //업데이트 팝업
                     await MainActor.run {
                         updateFlag = true
+                        fetchingFlag = false
                     }
                     
                 } else {
                     //데이터 최신인지 확인 -> 최신이면 바로 다음화면 / 최신아니면
-                    let currentDBVersion = RealmManager.shared.getLastFetchDate()
+                    let currentDBVersion = RealmManager.shared.getLastFetchDate()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     
-                    let currentYYMM = self.getCurrentYYMM()
+//                    let currentYYMM = self.getCurrentYYMM().trimmingCharacters(in: .whitespacesAndNewlines)
+                    let currentYYMM = "2605"
                     
                     print("currentDBVersion: \(currentDBVersion) , currentYYMM: \(currentYYMM)")
-
+                    
                     if(currentDBVersion == currentYYMM) {
                         //DB 최신상태
+                        await MainActor.run {
+                            fetchingFlag = false
+                        }
                     } else {
                         //DB 최신상태아니라서 업데이트 필요
                         initAllSaleInfo()
-                    }
-                    
-                    initAllSaleInfo()
-                    await MainActor.run {
-                        fetchingFlag = false
                     }
                 }
                 
