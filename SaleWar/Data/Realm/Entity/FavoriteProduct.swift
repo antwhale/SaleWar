@@ -15,6 +15,8 @@ class FavoriteProduct: Object, ObjectKeyIdentifiable {
     @Persisted var price: String
     @Persisted var saleFlag: String
     @Persisted var store: String
+    @Persisted var category: String = ""
+    @Persisted var productDescription: String = ""
     
     convenience init(product: Product) {
         self.init()
@@ -24,6 +26,8 @@ class FavoriteProduct: Object, ObjectKeyIdentifiable {
         self.price = product.price
         self.saleFlag = product.saleFlag
         self.store = product.store
+        self.category = product.category ?? ""
+        self.productDescription = product.description ?? ""
     }
     
     convenience init(productInfo: ProductInfo) {
@@ -34,6 +38,8 @@ class FavoriteProduct: Object, ObjectKeyIdentifiable {
         self.price = productInfo.price
         self.saleFlag = productInfo.saleFlag
         self.store = productInfo.store
+        self.category = productInfo.category ?? ""
+        self.productDescription = productInfo.productDescription ?? ""
     }
 }
 
@@ -43,6 +49,8 @@ struct FavoriteProductInfo {
     var price: String
     var saleFlag: String
     var store: String
+    var category: String = ""
+    var productDescription : String = ""
 }
 
 //class Product: Object, ObjectKeyIdentifiable {

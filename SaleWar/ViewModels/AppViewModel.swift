@@ -19,7 +19,7 @@ class AppViewModel: BaseViewModel {
         
     init() {
         print("AppViewModel init")
-                
+        RealmManager.init()
         checkProductVersion()
     }
     
@@ -33,17 +33,22 @@ class AppViewModel: BaseViewModel {
             }
             let result = await self.readFileAsync(from: PRODUCT_VERSION_URL)
             switch result {
-                case .success(let serverDate):
-                print(#fileID, #function, #line, "checkProductVersion, success: \(serverDate)")
-                let newDate = getLastFetchDate()
-                print("newDate: \(newDate)")
-                print("check date length: \(serverDate.count) vs \(newDate.count)")
-                let needToUpdate = checkUpdate(currentDate: serverDate.trimmingCharacters(in: .newlines), newDate: newDate)
+                case .success(let serverVersion):
                 
+//                let newDate = getLastFetchDate()
+//                print("newDate: \(newDate)")
+//                print("check date length: \(serverDate.count) vs \(newDate.count)")
+                let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+                print(#fileID, #function, #line, "currentVersion: \(currentVersion), serverVersion: \(serverVersion)")
+
+                let needToUpdate = checkUpdate(currentVersion: currentVersion, serverVersion: serverVersion.trimmingCharacters(in: .newlines))
+                print(#fileID, #function, #line, "needToUpdate : \(needToUpdate)")
+
                 if(needToUpdate) {
+                    //업데이트 팝업
                     initAllSaleInfo()
                 } else {
-                    print(#fileID, #function, #line, "Don't need to update sale info")
+                    //데이터 최신인지 확인 -> 최신이면 바로 다음화면 / 최신아니면
                     await MainActor.run {
                         fetchingFlag = false
                     }
@@ -105,22 +110,16 @@ class AppViewModel: BaseViewModel {
             
             print(#fileID, #function, #line, "initSaleInfo, \(storeType.rawValue)")
                 
-            guard let url = URL(string: storeType.rawJSONURL) else {
-                print(#fileID, #function, #line, "Error: Invalid URL string: \(storeType.rawValue)")
-                return
-            }
-            print("make url object")
-            
-            let (data, response) = try await URLSession.shared.data(from: url)
-            print("connected with \(storeType.rawValue)")
-            
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
-                print(#fileID, #function, #line, "HTTP Error: Invalid status code \(statusCode)")
+            // 1. Resources 폴더에서 JSON 파일 경로 찾기
+            let fileName = storeType.jsonFileName
+            guard let url = Bundle.main.url(forResource: fileName, withExtension: "json") else {
+                print(#fileID, #function, #line, "Error: Local JSON file not found: \(fileName).json")
                 return
             }
             
-            
+            // 2. 파일에서 Data 읽어오기 (비동기 처리 불필요하지만 구조 유지를 위해 그대로 둠)
+            let data = try Data(contentsOf: url)
+            print("Successfully loaded local JSON: \(fileName).json")
             
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -139,6 +138,7 @@ class AppViewModel: BaseViewModel {
             print(#fileID, #function, #line, "RealmDB update complete!")
             
             if(storeType == .sevenEleven) {
+                
                 await self.saveSaleInfoUpdateDate(realmManager: realmManager)
             }
             let fetchedProducts = realmManager.getProducts()
@@ -146,8 +146,6 @@ class AppViewModel: BaseViewModel {
             if fetchedProducts != nil {
                 print(#fileID, #function, #line, "Products in Realm: \(fetchedProducts!.count)")
             }
-            
-            
         } catch {
             print(#fileID, #function, #line, "Error decoding product data: \(error.localizedDescription)")
             DispatchQueue.main.async { [weak self] in
@@ -155,9 +153,6 @@ class AppViewModel: BaseViewModel {
                 self?.fetchingFlag = false
             }
         }
-        
-            
-        
     }
     
     func updateFavoriteProducts() {
@@ -219,43 +214,13 @@ class AppViewModel: BaseViewModel {
 
     //true면 상품정보 다시 읽어와야하고 false면 최신 상품정보 저장 중이므로 업데이트 필요없음
     //currentDate: 서버 세일정보 버전 | newDate: 앱 최근 세일정보 버전
-    func checkUpdate(currentDate: String, newDate: String) -> Bool {
-        print("checkUpdate, currentDate: \(currentDate) newDate: \(newDate) count: \(currentDate.count) \(newDate.count)")
-        // Check if the input strings are valid.
-        guard currentDate.count == 4, newDate.count == 4 else {
-            print("checkUpdate, invalid input so return true")
-            return true // Handle invalid input
-        }
-        
-        // Extract year and month components.
-        guard let currentYear = Int(currentDate.prefix(2)),
-              let currentMonth = Int(currentDate.suffix(2)),
-              let newYear = Int(newDate.prefix(2)),
-              let newMonth = Int(newDate.suffix(2)) else {
-            print("checkUpdate, can not divide YYMM so return true")
-
-            return true // Handle invalid numeric values
-        }
-        
-        // Perform the comparison.
-        if currentYear < newYear {
-            print("checkUpdate, currentYear < newYear")
-            return false
-        } else if currentYear > newYear {
-            print("checkUpdate, currentYear > newYear")
-            return true
-        } else { // Years are equal, compare months.
-            if currentMonth < newMonth {
-                print("checkUpdate, currentMonth < newMonth")
-                return false
-            } else if currentMonth > newMonth {
-                print("checkUpdate, currentMonth > newMonth")
-                return true
-            } else {
-                print("checkUpdate, Years and months are equal")
-                return false
-            }
-        }
+    func checkUpdate(currentVersion: String, serverVersion: String) -> Bool {
+        print("checkUpdate, currentVersion: \(currentVersion) serverVersion: \(serverVersion) count: \(currentVersion.count) \(serverVersion.count)")
+        // .numeric 옵션을 사용하면 "1.0.10"이 "1.0.2"보다 크다고 올바르게 판단합니다.
+            let result = serverVersion.compare(currentVersion, options: .numeric)
+            
+            // 서버 버전이 현재 버전보다 높으면(OrderedDescending) 업데이트 필요(true)
+            return result == .orderedDescending
     }
     
     func getCurrentYYMM() -> String {

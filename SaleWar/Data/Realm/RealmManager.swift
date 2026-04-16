@@ -14,16 +14,27 @@ class RealmManager {
     var cuNotificationToken: NotificationToken?
     var sevenElevenNotificationToken: NotificationToken?
     var favoriteProductsToken : NotificationToken?
-//    lazy var realm: Realm = {
-//        do {
-//            print("Realm init, thread: \(OperationQueue.current == OperationQueue.main)")
-//            let realm = try Realm()
-//            return realm
-//
-//        } catch  {
-//            fatalError("Failed to initialize Realm: \(error)")
-//        }
-//    }()
+    
+    init() {
+        let config = Realm.Configuration(
+            schemaVersion: 2,
+            migrationBlock : { migration, oldSchemaVersion in
+                if(oldSchemaVersion < 2) {
+                    print("Realm Migration: \(oldSchemaVersion) -> 2")
+                }
+            }
+        )
+        
+        Realm.Configuration.defaultConfiguration = config
+
+        // 설정을 마친 후 Realm을 한 번 열어서 정상 작동하는지 확인 (선택 사항)
+        do {
+            _ = try Realm()
+            print("Realm successfully initialized with schema version 2")
+        } catch {
+            print("Error opening Realm with migration: \(error)")
+        }
+    }
     
     //MARK: 상품관련
     func addProduct(product: Product) {

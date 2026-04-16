@@ -15,6 +15,8 @@ class Product: Object, ObjectKeyIdentifiable {
     @Persisted var price: String
     @Persisted var saleFlag: String
     @Persisted var store: String
+    @Persisted var category: String = ""
+    @Persisted var productDescription: String = ""
     
     convenience init(jsonProduct: ProductJSON, store: String) {
             self.init() // Call the superclass initializer
@@ -24,10 +26,12 @@ class Product: Object, ObjectKeyIdentifiable {
             self.price = jsonProduct.price
             self.saleFlag = jsonProduct.saleFlag
             self.store = store
+            self.category = jsonProduct.category ?? ""
+            self.productDescription = jsonProduct.productDescription ?? ""
         }
     
     func toString() -> String {
-        return "Product(img: \(img), title: \(title), price: \(price), saleFlag: \(saleFlag)), store: \(store)"
+        return "Product(img: \(img), title: \(title), price: \(price), saleFlag: \(saleFlag), store: \(store), category: \(category), description: \(productDescription))"
     }
 }
 

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -107,6 +107,10 @@
 		F8E173F52DF380200057AE74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F8051E7E2F8D5D810012A6F6 /* Resources */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Resources; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		F8227B192DC76F9E00C8EB21 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -167,6 +171,7 @@
 		F8227B1E2DC76F9F00C8EB21 /* SaleWar */ = {
 			isa = PBXGroup;
 			children = (
+				F8051E7E2F8D5D810012A6F6 /* Resources */,
 				F8E173F52DF380200057AE74 /* Info.plist */,
 				F87A42002DCA3DEB00EE0FAE /* Constant */,
 				F838446F2DC8F3E70089F869 /* Data */,
@@ -291,6 +296,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F8051E7E2F8D5D810012A6F6 /* Resources */,
 			);
 			name = SaleWar;
 			packageProductDependencies = (

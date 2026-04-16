@@ -26,6 +26,14 @@ enum StoreType: String, CaseIterable {
         }
     }
     
+    var jsonFileName : String {
+        switch self {
+        case .gs25: return "gs25-info"
+        case .cu: return "cu-info"
+        case .sevenEleven: return "seveneleven-info"
+        }
+    }
+    
     var brandLogo : String {
         switch self {
         case .gs25: return "gs25_logo"
@@ -49,14 +57,18 @@ struct ProductJSON: Decodable {
     let title: String
     let price: String // JSON has "4,000원", so it's a String
     let saleFlag: String
+    let category: String = ""
+    let productDescription: String = ""
 }
 
 struct ProductInfo {
-     var img: String
-     var title: String
-     var price: String
-     var saleFlag: String
-     var store: String
+    var img: String
+    var title: String
+    var price: String
+    var saleFlag: String
+    var store: String
+    var category: String = ""
+    var productDescription: String = ""
     
     init(product: Product) {
         self.img = product.img
@@ -64,6 +76,8 @@ struct ProductInfo {
         self.price = product.price
         self.saleFlag = product.saleFlag
         self.store = product.store
+        self.category = product.category
+        self.productDescription = product.productDescription
     }
 }
 
