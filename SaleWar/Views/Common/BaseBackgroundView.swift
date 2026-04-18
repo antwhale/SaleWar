@@ -10,6 +10,8 @@ import SwiftUI
 
 struct BaseBackgroundView: View {
     var body: some View {
+        let lightGray = Color(red: 232/255, green: 232/255, blue: 232/255)
+        
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 Rectangle()

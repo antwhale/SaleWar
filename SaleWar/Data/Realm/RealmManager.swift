@@ -81,6 +81,16 @@ class RealmManager {
         }
     }
     
+    func getProducts(forStore store: String, category: String) -> Results<Product>? {
+        do {
+            let realm = try Realm()
+            return realm.objects(Product.self).filter("store == %@", store).filter(("category == %@"), category)
+        } catch {
+            print("Error occurs when getProducts")
+            return nil
+        }
+    }
+    
 //    func deleteProduct(product: Product) async {
 //        do {
 //            let realm = try await Realm()
@@ -130,12 +140,22 @@ class RealmManager {
 //            return realm.objects(Product.self).filter("title CONTAINS[c] %@", partialTitle)
 //        }
     
-    func searchProducts(byPartialTitle partialTitle: String, for store: String) ->  [Product] {
+    func searchProducts(byPartialTitle partialTitle: String, for store: String, category: String) ->  [Product] {
         do {
             let realm = try Realm()
-            let result = realm.objects(Product.self)
-                .filter("title CONTAINS[c] %@", partialTitle)
-                .filter("store == %@", store)   
+            var result = realm.objects(Product.self)
+                .filter("store == %@", store)
+            
+            //키워드 검색 (키워드가 비어있지 않을 때만)
+            if !partialTitle.isEmpty {
+                result = result.filter("title CONTAINS[c] %@", partialTitle)
+            }
+            
+            //카테고리 검색
+            if category != "전체" {
+                result = result.filter(("category == %@") , category)
+            }
+            
             return Array(result)
         } catch {
             print("Error searchProducts: \(error)")
@@ -143,11 +163,33 @@ class RealmManager {
         }
     }
     
+    func getCategories(store: StoreType) -> [String] {
+        do {
+            let realm = try Realm()
+            
+            // 1. 해당 스토어의 상품들만 필터링
+            let products = realm.objects(Product.self).filter("store == %@", store.rawValue)
+            
+            // 2. 카테고리 필드만 추출하여 중복 제거 (value(forKey:) 활용)
+            // Set으로 변환하여 중복을 없애고 다시 배열로 만듭니다.
+            let categories = Set(products.compactMap { $0.category })
+            
+            print("getCategories, categories: \(categories)")
+            
+            // 3. 보기 좋게 정렬해서 반환 (가나다순)
+            return categories.sorted()
+        } catch {
+            print("Error fetching categories for \(store): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    
     func observeProducts(store: StoreType, onUpdateProducts: @escaping ([Product]) -> Void) {
         let realm = try! Realm()
         let results = realm.objects(Product.self).filter("store == %@", store.rawValue)
         
-        gs25NotificationToken = results.observe { change in
+        let token = results.observe { change in
             switch change {
             case .initial:
                 print("observeProducts, initial")
@@ -158,6 +200,15 @@ class RealmManager {
             case .error(let error):
                 print("observeProducts, \(error.localizedDescription)")
             }
+        }
+        
+        switch store {
+            case .gs25:
+                self.gs25NotificationToken = token
+            case .cu:
+                self.cuNotificationToken = token
+            case .sevenEleven:
+                self.sevenElevenNotificationToken = token
         }
     }
     

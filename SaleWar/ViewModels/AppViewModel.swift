@@ -140,6 +140,7 @@ class AppViewModel: BaseViewModel {
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             
             let productJSONs = try decoder.decode([ProductJSON].self, from: data)
+//            print("productJSONs: \(productJSONs)")
             let realmProducts = productJSONs.map {
                 Product(jsonProduct: $0, store: storeType.rawValue)
             }
@@ -147,7 +148,6 @@ class AppViewModel: BaseViewModel {
             let realmManager = RealmManager.shared
             
             await realmManager.deleteProducts(forStore: storeType.rawValue)
-            
             await realmManager.addProducts(products: realmProducts)
 
             print(#fileID, #function, #line, "RealmDB update complete!")

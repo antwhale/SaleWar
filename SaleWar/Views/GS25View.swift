@@ -40,6 +40,14 @@ struct GS25View: BaseView {
                 
                 Spacer(minLength: 8)
                 
+                CategoryListView(
+                    categories: gs25ViewModel.categories,
+                    selectedCategory: gs25ViewModel.selectedCategory == "" ? "전체" : gs25ViewModel.selectedCategory,
+                    onCategorySelected: { category in
+                        print("onCategorySelected \(category)")
+                        gs25ViewModel.selectedCategory = category
+                    })
+                
                 if !appViewModel.fetchingFlag {
                     GeometryReader { geometry in
                         ScrollView() {

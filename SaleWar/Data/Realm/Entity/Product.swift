@@ -26,8 +26,8 @@ class Product: Object, ObjectKeyIdentifiable {
             self.price = jsonProduct.price
             self.saleFlag = jsonProduct.saleFlag
             self.store = store
-            self.category = jsonProduct.category ?? ""
-            self.productDescription = jsonProduct.productDescription ?? ""
+            self.category = jsonProduct.category
+            self.productDescription = jsonProduct.productDescription
         }
     
     func toString() -> String {

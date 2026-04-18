@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import RealmSwift
 
 class CUViewModel : BaseViewModel {
     
@@ -23,11 +24,25 @@ class CUViewModel : BaseViewModel {
     @Published var searchKeyword: String = ""
     @Published var showingFavoriteList = false
     
-    func fetchCUProducts() {
-        print("fetchCUProducts, thread: \(OperationQueue.current == OperationQueue.main)")
+    @Published var selectedCategory: String = ""
+    @Published var categories: [String] = []
+    
+    func fetchCUProducts(category: String) {
+        print("fetchCUProducts, category: \(category)")
         
         let realmManager = RealmManager.shared
-        guard let cuProducts = realmManager.getProducts(forStore: StoreType.cu.rawValue) else {
+        let store = StoreType.cu.rawValue
+        
+        // 1. 조건에 따른 데이터 조회
+        var results: Results<Product>?
+        if category.isEmpty || category == "전체" {
+            results = realmManager.getProducts(forStore: store)
+        } else {
+            results = realmManager.getProducts(forStore: store, category: category)
+        }
+        
+        // 2. 결과 처리 (Guard 문으로 통합)
+        guard let cuProducts = results else {
             print("No CU Products")
             self.productList = []
             return
@@ -43,7 +58,12 @@ class CUViewModel : BaseViewModel {
         
         let realmManager = RealmManager.shared
         realmManager.observeProducts(store: StoreType.cu) { [weak self] results in
-            guard let isProductsEmpty = self?.productList.isEmpty else { return }
+            guard let isProductsEmpty = self?.productList.isEmpty else {
+                print("observeCUProducts, isProductsEmpty is nil")
+                return
+            }
+            
+            print("observeCUProducts, isProductsEmpty: \(isProductsEmpty)")
             
             if isProductsEmpty {
                 self?.productList = results
@@ -52,34 +72,47 @@ class CUViewModel : BaseViewModel {
                 self?.productList = results
             }
         }
+        
+        categories = realmManager.getCategories(store: StoreType.cu)
+        categories.insert("전체", at: 0)
     }
     
     func observeSearchKeyword() {
         print("CUViewModel observeSearchKeyword")
         
-        $searchKeyword
+        // 1. 두 퍼블리셔를 결합합니다.
+        Publishers.CombineLatest($searchKeyword, $selectedCategory)
+            // 2. 검색어 입력 시에만 너무 자주 호출되지 않도록 디바운스 적용
             .debounce(for: .seconds(0.5), scheduler: DispatchQueue.main)
-            .removeDuplicates()
+            .removeDuplicates { prev, curr in
+                // 검색어와 카테고리가 둘 다 이전과 같을 때만 중복으로 간주
+                return prev.0 == curr.0 && prev.1 == curr.1
+            }
             .dropFirst()
-            .sink { [weak self] keyword in
+            .sink { [weak self] (keyword, category) in
                 guard let self = self else { return }
+                print("이벤트 발생 - Keyword: \(keyword), Category: \(category)")
                 
                 if !keyword.isEmpty {
-                    let searchResult = self.performSearch(with: keyword)
+                    print(#fileID, #function, #line, "keyword : \(keyword), category: \(selectedCategory)")
+                    
+                    let searchResult = self.performSearch(with: keyword, category: selectedCategory)
                     self.productList = searchResult
                 } else {
+                    print(#fileID, #function, #line, "keyword is empty, category: \(selectedCategory)")
+
                     //전체 검색한 결과 보여주기
-                    self.fetchCUProducts()
+                    self.fetchCUProducts(category: selectedCategory)
                 }
             }
             .store(in: &cancellableBag)
     }
     
-    func performSearch(with keyword: String) -> [Product] {
+    func performSearch(with keyword: String, category: String) -> [Product] {
         print("performSearch(with:) \(keyword)")
         
         let realmManager = RealmManager.shared
-        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.cu.rawValue)
+        return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.cu.rawValue, category: category)
     }
     
     func addFavoriteProduct(_ product: Product) {

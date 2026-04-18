@@ -41,6 +41,14 @@ struct CUView: BaseView {
                     ScrollView() {
                         Spacer(minLength: 8)
                         
+                        CategoryListView(
+                            categories: cuViewModel.categories,
+                            selectedCategory: cuViewModel.selectedCategory == "" ? "전체" : cuViewModel.selectedCategory,
+                            onCategorySelected: { category in
+                                print("onCategorySelected \(category)")
+                                cuViewModel.selectedCategory = category
+                            })
+                        
                         let itemWidth = (geometry.size.width - 15) / 2
                         
                         let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]

@@ -42,6 +42,14 @@ struct SevenElevenView: BaseView {
                     ScrollView() {
                         Spacer(minLength: 8)
                         
+                        CategoryListView(
+                            categories: sevenElevenViewModel.categories,
+                            selectedCategory: sevenElevenViewModel.selectedCategory == "" ? "전체" : sevenElevenViewModel.selectedCategory,
+                            onCategorySelected: { category in
+                                print("onCategorySelected \(category)")
+                                sevenElevenViewModel.selectedCategory = category
+                            })
+                        
                         let itemWidth = (geometry.size.width - 15) / 2
                         
                         let columns: [GridItem] = [GridItem(.fixed(itemWidth)),GridItem(.fixed(itemWidth)) ]

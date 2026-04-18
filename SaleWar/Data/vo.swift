@@ -57,8 +57,17 @@ struct ProductJSON: Decodable {
     let title: String
     let price: String // JSON has "4,000원", so it's a String
     let saleFlag: String
-    let category: String = ""
-    let productDescription: String = ""
+    let category: String
+    let productDescription: String
+    
+    enum CodingKeys: String, CodingKey {
+            case img
+            case title
+            case price
+            case saleFlag
+            case category
+            case productDescription = "description" // JSON의 "product" 키를 이 변수에 매핑!
+        }
 }
 
 struct ProductInfo {
