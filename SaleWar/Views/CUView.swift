@@ -19,6 +19,10 @@ struct CUView: BaseView {
             BaseBackgroundView()
             
             VStack {
+                AdaptiveBannerView(adUnitID: AD_UNIT_ID)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 60)
+                
                 SaleWarTitleBar() {
                     cuViewModel.showingFavoriteList = true
                 }

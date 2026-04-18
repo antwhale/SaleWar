@@ -48,10 +48,16 @@ struct ContentView: View {
             Button("확인", role: .none) {
                 print("확인 클릭")
                 let appID = "6747519208"
-                    if let url = URL(string: "itms-apps://itunes.apple.com/app/\(appID)"),
-                       UIApplication.shared.canOpenURL(url) {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                    }
+                if let url = URL(string: "itms-apps://itunes.apple.com/app/\(appID)"),
+                   UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+                // 2. 다이얼로그가 닫히는 것을 방지하기 위해 강제로 다시 true 설정
+                // 버튼을 클릭하면 시스템이 자동으로 false로 바꾸려 하기 때문에
+                // 0.1초 뒤에 다시 true로 바꿔서 사라지지 않게 합니다.
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    appViewModel.updateFlag = true
+                }
             }
         } message: {
             Text("최신 버전의 앱으로 업데이트해주세요")

@@ -11,3 +11,5 @@ let GS25_PRODUCT_URL = "https://raw.githubusercontent.com/antwhale/SaleWar/refs/
 let CU_PRODUCT_URL = "https://raw.githubusercontent.com/antwhale/SaleWar/refs/heads/main/CU_Product.json"
 let SEVEN_ELEVEN_PRODUCT_URL = "https://raw.githubusercontent.com/antwhale/SaleWar/refs/heads/main/SevenEleven_Product.json"
 let PRODUCT_VERSION_URL = "https://raw.githubusercontent.com/antwhale/SaleWar/refs/heads/main/ios_version"
+
+let AD_UNIT_ID = "ca-app-pub-3757171409537383/1928504427"

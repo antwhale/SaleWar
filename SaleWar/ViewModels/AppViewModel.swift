@@ -53,8 +53,7 @@ class AppViewModel: BaseViewModel {
                     //데이터 최신인지 확인 -> 최신이면 바로 다음화면 / 최신아니면
                     let currentDBVersion = RealmManager.shared.getLastFetchDate()?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                     
-//                    let currentYYMM = self.getCurrentYYMM().trimmingCharacters(in: .whitespacesAndNewlines)
-                    let currentYYMM = "2605"
+                    let currentYYMM = self.getCurrentYYMM().trimmingCharacters(in: .whitespacesAndNewlines)
                     
                     print("currentDBVersion: \(currentDBVersion) , currentYYMM: \(currentYYMM)")
                     

@@ -20,6 +20,10 @@ struct GS25View: BaseView {
             BaseBackgroundView()
 
             VStack {
+                AdaptiveBannerView(adUnitID: AD_UNIT_ID)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 60)
+                
                 SaleWarTitleBar() {
                     gs25ViewModel.showingFavoriteList = true
                 }
