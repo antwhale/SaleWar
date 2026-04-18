@@ -78,6 +78,17 @@ struct FavoriteProductItem: View {
                         .frame(height: 8)
                     
                     HStack {
+                        if !product.category.isEmpty {
+                            Text(product.category)
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.yellow)
+                                .foregroundColor(.white)
+                                .cornerRadius(5)
+                        }
+                        
                         Text(product.saleFlag == "" ? "행사 상품이 아닙니다" : product.saleFlag)
                             .lineLimit(1)
                             .font(.caption)

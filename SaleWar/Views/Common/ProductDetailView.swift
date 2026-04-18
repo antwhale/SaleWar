@@ -18,92 +18,123 @@ struct ProductDetailView: View {
         GeometryReader { geometry in
             ZStack {
                 ZStack(alignment: .topTrailing) {
-                    HStack {
-                        AsyncImage(url: URL(string: product?.img ?? "")) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView() // Show a progress indicator while loading
-                                    .frame(width: 100, height: 100)
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 150, height: 150) // Adjust size as needed
-                                    .cornerRadius(8)
-                            case .failure:
-                                Image(systemName: "photo") // Placeholder if image fails to load
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(width: 100, height: 100)
-                                    .foregroundColor(.gray)
-                            @unknown default:
-                                EmptyView()
-                            }
-                        }
-                        .onTapGesture { }
-                        
-                        Spacer()
-                            .frame(width: 16)
-                        
-                        VStack(alignment: .leading) {
-                            Text(product?.title ?? "")
-                                .font(.subheadline)
-                                .foregroundColor(.black)
-                                .fontWeight(.semibold)
-                                .lineLimit(2) // Limit to 2 lines, truncate if longer
-                                .multilineTextAlignment(.leading)
-                                .onTapGesture { }
-                            
-                            Spacer()
-                                .frame(height: 8)
-                            
-                            Text(product?.price ?? "")
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                                .onTapGesture { }
-                            
-                            Spacer()
-                                .frame(height: 8)
-                            
-                            Text(product?.saleFlag ?? "")
-                                .font(.caption)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 3)
-                                .background(saleFlagBackgroundColor(for: product?.saleFlag ?? ""))
-                                .foregroundColor(.white)
-                                .cornerRadius(5)
-                                .onTapGesture { }
-                            
-                            Spacer()
-                                .frame(height: 8)
-                            
-                            Image(systemName: "heart.fill")
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 30, height: 30)
-                                .foregroundColor(isFavoriteProduct ? .pink : .gray)
-                                .padding(.bottom, 4)
-                                .onTapGesture {
-                                    isFavoriteProduct.toggle()
-                                    onClickedFavoriteIcon(product!)
-                                }
-                        }
-                        .onTapGesture { }
-                    }
-                    .frame(maxWidth: geometry.size.width - 48, maxHeight: geometry.size.height * 0.33 - 32)
-                    .onTapGesture { }
                     
+                    
+                    VStack(alignment: .leading, spacing: 16){
+                        HStack {
+                            AsyncImage(url: URL(string: product?.img ?? "")) { phase in
+                                switch phase {
+                                case .empty:
+                                    ProgressView() // Show a progress indicator while loading
+                                        .frame(width: 100, height: 100)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 150, height: 150) // Adjust size as needed
+                                        .cornerRadius(8)
+                                case .failure:
+                                    Image(systemName: "photo") // Placeholder if image fails to load
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(width: 100, height: 100)
+                                        .foregroundColor(.gray)
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+                            .onTapGesture { }
+                            
+                            Spacer()
+                                .frame(width: 16)
+                            
+                            VStack(alignment: .leading) {
+                                Text(product?.title ?? "")
+                                    .font(.subheadline)
+                                    .foregroundColor(.black)
+                                    .fontWeight(.semibold)
+                                    .lineLimit(2) // Limit to 2 lines, truncate if longer
+                                    .multilineTextAlignment(.leading)
+                                    .onTapGesture { }
+                                
+                                Spacer()
+                                    .frame(height: 8)
+                                
+                                Text(product?.price ?? "")
+                                    .font(.subheadline)
+                                    .foregroundColor(.gray)
+                                    .onTapGesture { }
+                                
+                                HStack(spacing: 6) {
+                                    if let category = product?.category, !category.isEmpty {
+                                        Text(category)
+                                            .font(.caption2)
+                                            .fontWeight(.bold)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.yellow)
+                                            .foregroundColor(.white)
+                                            .cornerRadius(5)
+                                    }
+                                    
+                                    Text(product?.saleFlag ?? "")
+                                        .font(.caption)
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 3)
+                                        .background(saleFlagBackgroundColor(for: product?.saleFlag ?? ""))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(5)
+                                        .onTapGesture { }
+                                }
+                                
+                                Spacer()
+                                    .frame(height: 8)
+                                
+                                
+                                
+                                Spacer()
+                                    .frame(height: 8)
+                                
+                                Image(systemName: "heart.fill")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 30, height: 30)
+                                    .foregroundColor(isFavoriteProduct ? .pink : .gray)
+                                    .padding(.bottom, 4)
+                                    .onTapGesture {
+                                        isFavoriteProduct.toggle()
+                                        onClickedFavoriteIcon(product!)
+                                    }
+                            }
+                            .onTapGesture { }
+                        }
+                        .frame(maxWidth: geometry.size.width - 48, maxHeight: geometry.size.height * 0.33 - 32)
+                        .onTapGesture { }
+                        
+                        if let description = product?.productDescription, !description.isEmpty {
+                            
+                            Text(description)
+                                .font(.caption)
+                                .foregroundColor(.black)
+                                .frame(alignment: .leading)
+                                .padding(.horizontal, 8)
+                                .multilineTextAlignment(.leading)
+                                .padding(.bottom, 16)
+                            
+                        }
+                    }
                     Image(systemName: "xmark")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 20, height: 20, alignment: .trailing)
                         .foregroundColor(.black)
-                        .padding(.bottom, 4)
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 8)
                         .onTapGesture {
                             onCanceledDetailView()
                         }
                 }
-                .frame(width: geometry.size.width - 16, height: geometry.size.height * 0.33)
+                .frame(width: geometry.size.width - 16)
                 .background(Color.white)
                 .cornerRadius(10)
                 .onTapGesture { }
