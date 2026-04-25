@@ -103,7 +103,7 @@ class GS25ViewModel: BaseViewModel {
     
     func performSearch(with keyword: String, category: String) -> [Product] {
         
-        print("GS25ViewModel performSearch(with:) \(keyword)")
+        print("GS25ViewModel performSearch(with:) \(keyword), category: \(category)")
         
         let realmManager = RealmManager.shared
         return realmManager.searchProducts(byPartialTitle: keyword, for: StoreType.gs25.rawValue, category: category)

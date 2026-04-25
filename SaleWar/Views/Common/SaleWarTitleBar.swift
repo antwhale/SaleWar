@@ -19,7 +19,7 @@ struct SaleWarTitleBar : View {
             
             Spacer()
             
-            Text("세일 전쟁")
+            Text("편의점 할인")
                 .font(.headline)
                 .fontWeight(.bold)
                 .foregroundStyle(.black)

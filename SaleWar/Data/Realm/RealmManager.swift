@@ -152,9 +152,9 @@ class RealmManager {
             }
             
             //카테고리 검색
-            if category != "전체" {
+            if category != "전체" && category != "" {
                 result = result.filter(("category == %@") , category)
-            }
+            } 
             
             return Array(result)
         } catch {
