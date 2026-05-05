@@ -496,6 +496,22 @@ class RealmManager {
         }
     }
     
+    func deleteLastFetchInfo() {
+        print(#fileID, #function, #line, "deleteLastFetchInfo")
+
+        do {
+            let realm = try Realm()
+            
+            try realm.write {
+                let allObjects = realm.objects(LastFectchInfo.self)
+                realm.delete(allObjects)
+            }
+        } catch {
+            print("Error occurs when deleteLastFetchInfo")
+
+        }
+    }
+    
     
     
     

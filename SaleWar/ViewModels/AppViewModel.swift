@@ -43,6 +43,7 @@ class AppViewModel: BaseViewModel {
                 print(#fileID, #function, #line, "needToUpdate : \(needToUpdate)")
 
                 if(needToUpdate) {
+                    await deleteLastFetchInfo()
                     //업데이트 팝업
                     await MainActor.run {
                         updateFlag = true
@@ -102,6 +103,13 @@ class AppViewModel: BaseViewModel {
         
         let realmManager = RealmManager.shared
         await realmManager.deleteFavoriteProduct(productTitle)
+    }
+    
+    func deleteLastFetchInfo() async {
+        print(#fileID, #function, #line, "deleteFavoriteProduct")
+        
+        let realmManager = RealmManager.shared
+        await realmManager.deleteLastFetchInfo()
     }
     
     func initAllSaleInfo() {
