@@ -176,6 +176,10 @@ class RealmManager {
             
             print("getCategories, categories: \(categories)")
             
+            let testProducts = realm.objects(Product.self)
+                        .filter("store == %@ AND category == ''", store.rawValue)
+            print("testProducts: \(Array(testProducts))")
+            
             // 3. 보기 좋게 정렬해서 반환 (가나다순)
             return categories.sorted()
         } catch {

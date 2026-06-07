@@ -144,7 +144,7 @@ class AppViewModel: BaseViewModel {
             print("Successfully loaded local JSON: \(fileName).json")
             
             let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
+//            decoder.keyDecodingStrategy = .convertFromSnakeCase
             
             let productJSONs = try decoder.decode([ProductJSON].self, from: data)
 //            print("productJSONs: \(productJSONs)")

@@ -53,12 +53,12 @@ enum StoreType: String, CaseIterable {
 }
 
 struct ProductJSON: Decodable {
-    let img: String
-    let title: String
-    let price: String // JSON has "4,000원", so it's a String
-    let saleFlag: String
-    let category: String
-    let productDescription: String
+    let img: String?
+    let title: String?
+    let price: String?  //. JSON has "4,000원", so it's a String
+    let saleFlag: String?
+    let category: String?
+    let productDescription: String?
     
     enum CodingKeys: String, CodingKey {
             case img
@@ -66,7 +66,7 @@ struct ProductJSON: Decodable {
             case price
             case saleFlag
             case category
-            case productDescription = "description" // JSON의 "product" 키를 이 변수에 매핑!
+            case productDescription = "description" // JSON의 "description" 키를 이 변수에 매핑!
         }
 }
 

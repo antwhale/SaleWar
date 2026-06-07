@@ -19,16 +19,16 @@ class Product: Object, ObjectKeyIdentifiable {
     @Persisted var productDescription: String = ""
     
     convenience init(jsonProduct: ProductJSON, store: String) {
-            self.init() // Call the superclass initializer
+        self.init() // Call the superclass initializer
             // Realm automatically assigns an ObjectId if not provided for primary key
-            self.img = jsonProduct.img
-            self.title = jsonProduct.title
-            self.price = jsonProduct.price
-            self.saleFlag = jsonProduct.saleFlag
-            self.store = store
-            self.category = jsonProduct.category
-            self.productDescription = jsonProduct.productDescription
-        }
+        self.img = jsonProduct.img ?? ""
+        self.title = jsonProduct.title ?? ""
+        self.price = jsonProduct.price ?? ""
+        self.saleFlag = jsonProduct.saleFlag ?? ""
+        self.store = store ?? ""
+        self.category = jsonProduct.category ?? ""
+        self.productDescription = jsonProduct.productDescription ?? ""
+    }
     
     func toString() -> String {
         return "Product(img: \(img), title: \(title), price: \(price), saleFlag: \(saleFlag), store: \(store), category: \(category), description: \(productDescription))"
